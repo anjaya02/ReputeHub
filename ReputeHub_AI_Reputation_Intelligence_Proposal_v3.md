@@ -8,6 +8,7 @@
 
 ## 1. The Problem: Digital Reputation Blind Spots
 
+
 Small and medium businesses often face the same critical challenge — **they don’t know what customers are saying about them until it’s too late.**
 
 ### Common Problems:
@@ -167,32 +168,36 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ---
 
-#### 8. Fake Review Detection
+#### 8. Review Plausibility Analysis
 
-**Purpose:** Identify and flag potentially fake or spam reviews.  
+**Purpose:** Assess the credibility and authenticity patterns of reviews.  
 **Features:**
 
 - Detect repetitive text patterns
-- Identify suspicious new accounts
-- Fake probability score
+- Identify unusual account behaviors
+- Plausibility confidence score
 
 **Example:**
 
-> “Identical 1⭐ reviews from new accounts → 85% fake probability.”
+> "Identical 1⭐ reviews from new accounts → Low plausibility (15% confidence)."
 
 ---
 
-#### 9. Conversational AI Assistant
+#### 9. Conversational AI Assistant Analysis
 
-**Purpose:** Allow owners to query business insights via natural language.  
-**Examples:**
+**Purpose:** Assess the credibility and authenticity patterns of reviews.  
+**Features:**
 
-- “Show me negative reviews from last month.”
-- “What are the top customer complaints this week?”  
-  **Tech:** RAG architecture using vector embeddings for local context.
+- Detect repetitive text patterns
+- Identify unusual account behaviors
+- Plausibility confidence score
+
+**Example:**
+
+> "Identical 1⭐ reviews from new accounts → Low plausibility (15% confidence)."ility Analysis
+
 
 ---
-
 ### 💬 **v3 (Lite) – Engagement & Social Intelligence**
 
 #### 10. Sentiment + Intent Detection
@@ -236,14 +241,18 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ---
 
-#### 14. Ethical & Compliance Safeguards
+#### 14. Basic Competitor Tracking
 
-**Purpose:** Ensure safe AI behavior and brand professionalism.  
+**Purpose:** Monitor the public reputation of key competitors.  
 **Features:**
 
-- Human-in-loop for all public replies
-- Tone control (Empathetic, Formal, Friendly)
-- Business rule filters (no refunds mentioned publicly)
+- Track average rating changes for up to 3 competitors.
+- Compare review volume and sentiment trends.
+- Identify competitor weaknesses to turn into opportunities.
+
+**Example:**
+
+> A café notices a rival’s sentiment for “coffee quality” is dropping, so they launch a marketing campaign focused on their premium beans.
 
 ---
 
@@ -311,11 +320,11 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ## 8. SaaS Business Model
 
-| Plan             | Price (LKR)  | Features                                         | Target Market           |
-| ---------------- | ------------ | ------------------------------------------------ | ----------------------- |
-| **Starter**      | 3,000/month  | 1 location, Sentiment, Alerts                    | Cafes, shops            |
-| **Professional** | 9,000/month  | Aspect analysis, Fake detection, WhatsApp alerts | Restaurants, clinics    |
-| **Business**     | 24,000/month | Predictive analytics, Reports, Priority support  | Hotel chains, retailers |
+| Plan             | Price (LKR)  | Features                                                | Target Market           |
+| ---------------- | ------------ | ------------------------------------------------------- | ----------------------- |
+| **Starter**      | 3,000/month  | 1 location, Sentiment, Alerts                           | Cafes, shops            |
+| **Professional** | 9,000/month  | Aspect analysis, Plausibility analysis, WhatsApp alerts | Restaurants, clinics    |
+| **Business**     | 24,000/month | Predictive analytics, Reports, Priority support         | Hotel chains, retailers |
 
 **Break-even:** 3 customers  
 **Scalable Goal:** 200 customers = LKR 1.5M/month
@@ -356,7 +365,42 @@ Planned for premium enterprise customers:
 
 ---
 
-## 12. Conclusion
+## 12. 🧱 Realistically Buildable in 6 Months
+
+Here’s a breakdown of what’s feasible to fully implement, prototype, or simulate within your timeline.
+
+### ✅ Must-Have (Fully Buildable MVP)
+
+**Focus for the first 4 months:**
+
+1.  **Review Integration (v1.1)** – API + manual import.
+2.  **Basic Sentiment Classification (v1.2)** – multilingual model fine-tuned.
+3.  **AI Response Generator (v1.3)** – LLaMA/Gemini prompt pipeline with approval layer.
+4.  **Dashboard + Alerts (v1.4, v1.5)** – real-time sentiment charts & WhatsApp/email alerts.
+5.  **Aspect-Based Analysis (v2.6)** – fine-tuned XLM-R model with aspect dictionary.
+6.  **Issue Extraction + Reporting (v3.12)** – BERTopic + summarization (BART).
+
+💡 These 6 alone deliver a polished, demo-ready SaaS MVP — real AI + clear business value.
+
+### ⚙️ Phase 2 (Prototype-Level)
+
+**Focus during months 4–6:**
+
+7.  **Predictive Analytics (v2.7)** – implement Prophet baseline model.
+8.  **Conversational Insights (v2.9)** – simple RAG chatbot querying review DB.
+9.  **Intent Detection (v3.10)** – fine-tune small classification head over XLM-R.
+10. **Competitor Tracking (v3.14)** – limited to 1–2 public pages using API/manual entry.
+
+These add clear “startup” value and enhance your academic and innovation score.
+
+### 🧠 Simulated or Optional (Documented, Not Full Build)
+
+Can be conceptually demonstrated:
+
+- **Review Plausibility Analysis (v2.8)** – show algorithm logic + synthetic dataset demo.
+- **Feedback Loop (v3.13)** – mock email follow-up flow.
+
+## 13. Conclusion
 
 **ReputeHub v3** evolves from a simple review manager to a full-fledged **AI Reputation Intelligence System**.
 
@@ -377,3 +421,5 @@ It helps businesses:
 **Mission:** Empower businesses with AI-driven social intelligence that’s multilingual, ethical, and affordable.  
 **Vision:** Become South Asia’s leading AI reputation platform for SMEs.  
 **Tagline:** _Listen Smarter. Respond Faster. Grow Stronger._
+
+---
