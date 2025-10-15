@@ -398,8 +398,6 @@ Planned for premium enterprise customers:
 
 ## 12. 🧱 Realistically Buildable in 6 Months
 
-Here’s a breakdown of what’s feasible to fully implement, prototype, or simulate within your timeline.
-
 ### ✅ Must-Have (Fully Buildable MVP)
 
 **Focus for the first 4 months:**
