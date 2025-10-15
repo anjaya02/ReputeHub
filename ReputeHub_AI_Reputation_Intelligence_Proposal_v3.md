@@ -92,9 +92,8 @@ Small and medium businesses often face the same critical challenge — **they do
 
 **Example:**
 
-> Review: “ආහාරය රසයි නමුත් සේවය මන්දගාමීයි.”  
+> Review: "Food was good, but service was slow."  
 > Output: Food = Positive (0.88), Service = Negative (0.73)
-
 ---
 
 #### 3. AI Response Generator (Human-Approved)
@@ -183,21 +182,15 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ---
 
-#### 9. Conversational AI Assistant Analysis
-
-**Purpose:** Assess the credibility and authenticity patterns of reviews.  
-**Features:**
-
-- Detect repetitive text patterns
-- Identify unusual account behaviors
-- Plausibility confidence score
-
-**Example:**
-
-> "Identical 1⭐ reviews from new accounts → Low plausibility (15% confidence)."ility Analysis
-
+#### 9️. Conversational AI Assistant
+**Purpose:** Allow owners to query business insights via natural language.  
+**Examples:**  
+- “Show me negative reviews from last month.”  
+- “What are the top customer complaints this week?”  
+**Tech:** RAG architecture using vector embeddings for local context.
 
 ---
+
 ### 💬 **v3 (Lite) – Engagement & Social Intelligence**
 
 #### 10. Sentiment + Intent Detection
@@ -416,7 +409,7 @@ It helps businesses:
 
 ---
 
-### 👥 Team ReputeHub
+### 👥 Team ReputeHub - Y3-05
 
 **Mission:** Empower businesses with AI-driven social intelligence that’s multilingual, ethical, and affordable.  
 **Vision:** Become South Asia’s leading AI reputation platform for SMEs.  
