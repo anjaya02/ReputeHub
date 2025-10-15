@@ -418,7 +418,8 @@ Planned for premium enterprise customers:
 7.  **Predictive Analytics (v2.7)** – implement Prophet baseline model.
 8.  **Conversational Insights (v2.9)** – simple RAG chatbot querying review DB.
 9.  **Intent Detection (v3.10)** – fine-tune small classification head over XLM-R.
-10. **Competitor Tracking (v3.14)** – limited to 1–2 public pages using API/manual entry.
+10. **Conversational AI Engagement Bot (v3.11)** – empathetic reply suggestions with human approval.
+11. **Competitor Tracking (v3.14)** – limited to 1–2 public pages using API/manual entry.
 
 These add clear “startup” value and enhance your academic and innovation score.
 
