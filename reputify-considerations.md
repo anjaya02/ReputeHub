@@ -1,8 +1,8 @@
-# ReputeHub v3 - Strategic Considerations & Risk Assessment
+# Reputify v3 - Strategic Considerations & Risk Assessment
 
 ## Executive Summary
 
-Based on comprehensive analysis of the ReputeHub v3 proposal, this document outlines critical considerations for the AI Social Intelligence & Engagement System development. The analysis reveals significant technical and legal risks with the proposed social media scraping approach, while identifying a highly viable alternative path focusing on v1+v2 features.
+Based on comprehensive analysis of the Reputify v3 proposal, this document outlines critical considerations for the AI Social Intelligence & Engagement System development. The analysis reveals significant technical and legal risks with the proposed social media scraping approach, while identifying a highly viable alternative path focusing on v1+v2 features.
 
 ## Key Finding: Social Media Scraping - Critical Risk Analysis
 
@@ -143,7 +143,7 @@ Profit at 10 customers: LKR 30K/month
 
 ### Competitive Analysis
 
-| Feature                  | ReputeHub v1+v2       | International Tools | Advantage                 |
+| Feature                  | Reputify v1+v2        | International Tools | Advantage                 |
 | ------------------------ | --------------------- | ------------------- | ------------------------- |
 | **Multilingual Support** | Sinhala/Tamil/English | English only        | ✅ **UNIQUE**             |
 | **Local Pricing**        | $10-30/month          | $100-300/month      | ✅ **10x cheaper**        |

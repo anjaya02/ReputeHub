@@ -1,4 +1,4 @@
-# 🚀 **ReputeHub v3 – AI Reputation Intelligence & Engagement System**
+# 🚀 **Reputify v3 – AI Reputation Intelligence & Engagement System**
 
 **Version:** 3.0 (De-risked & Scalable)  
 **Purpose:** Build a multilingual, AI-powered SaaS platform for managing, analyzing, and improving business reputation — safely and affordably.  
@@ -24,9 +24,9 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ---
 
-## 2. **The ReputeHub Solution**
+## 2. **The Reputify Solution**
 
-> **ReputeHub** helps businesses actively monitor, understand, and improve their online reputation through multilingual AI — without violating platform policies.
+> **Reputify** helps businesses actively monitor, understand, and improve their online reputation through multilingual AI — without violating platform policies.
 
 ### **Core Value Proposition:**
 
@@ -255,11 +255,11 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ### 🧋 **Scenario 1 – Local Café Turns Viral Feedback into Growth**
 
-**Problem:** Multiple customers mention “Great coffee, slow service” across Google and Facebook.
+**Problem:** Multiple customers mention "Great coffee, slow service" across Google and Facebook.
 
-**ReputeHub in Action:**
+**Reputify in Action:**
 
-1. **Aspect Analysis (v2)** identifies “service delay” as a recurring complaint.
+1. **Aspect Analysis (v2)** identifies "service delay" as a recurring complaint.
 2. **Predictive Analytics (v2)** forecasts a 0.3⭐ rating drop if unresolved.
 3. **AI Engagement Bot (v3)** suggests an empathetic public reply.
 4. **Issue Extraction (v3)** shows 18 similar complaints in a week.
@@ -271,11 +271,11 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ### 🏨 **Scenario 2 – Boutique Hotel Enhances Guest Experience with AI Insights**
 
-**Problem:** Reviews say, “Beautiful place, but hard to contact reception.”
+**Problem:** Reviews say, "Beautiful place, but hard to contact reception."
 
-**ReputeHub in Action:**
+**Reputify in Action:**
 
-1. **Intent Detection (v3)** flags these as “query + frustration.”
+1. **Intent Detection (v3)** flags these as "query + frustration."
 2. **Dashboard (v1)** visualizes the spike under the “communication” category.
 3. **Predictive Analytics (v2)** shows potential sentiment decline in 2 weeks.
 4. **AI Assistant (v2)** recommends automating guest messaging via WhatsApp.
@@ -289,7 +289,7 @@ Small and medium businesses often face the same critical challenge — **they do
 
 **Problem:** Sudden 1⭐ reviews appear on Google — all using similar wording.
 
-**ReputeHub in Action:**
+**Reputify in Action:**
 
 1. **Review Plausibility (v2)** detects repetitive phrasing → low authenticity score.
 2. **Alert System (v1)** instantly notifies the PR manager via WhatsApp.
@@ -303,9 +303,9 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ### 💬 **Scenario 4 – Healthcare Center Builds Patient Trust with Empathetic AI**
 
-**Problem:** Feedback says, “Staff were kind but billing was confusing.”
+**Problem:** Feedback says, "Staff were kind but billing was confusing."
 
-**ReputeHub in Action:**
+**Reputify in Action:**
 
 1. **Intent = Complaint**, **Aspect = Billing Transparency.**
 2. **AI Response Generator (v1)** creates a polite apology with explanation request.
@@ -318,11 +318,11 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ### 🏫 **Scenario 5 – Educational Institute Boosts Reputation Through Transparency**
 
-**Problem:** Students complain on Facebook about “slow response to inquiries.”
+**Problem:** Students complain on Facebook about "slow response to inquiries."
 
-**ReputeHub in Action:**
+**Reputify in Action:**
 
-1. **Intent Detection (v3)** classifies these as “queries.”
+1. **Intent Detection (v3)** classifies these as "queries."
 2. **Alert System (v1)** notifies admin staff in real-time.
 3. **Dashboard (v1)** shows inquiry-related mentions up by 55%.
 4. **Conversational AI (v2)** summarizes frequent issues for management.
@@ -432,7 +432,7 @@ Can be conceptually demonstrated:
 
 ## 13. **Conclusion**
 
-**ReputeHub v3** evolves from a simple review manager to a full-fledged **AI Reputation Intelligence System**.
+**Reputify v3** evolves from a simple review manager to a full-fledged **AI Reputation Intelligence System**.
 
 It helps businesses:
 
@@ -441,12 +441,12 @@ It helps businesses:
 - Respond empathetically and ethically.
 - Predict and prevent future reputation crises.
 
-> “Businesses don’t fail from bad products — they fail from silent customers.  
-> ReputeHub ensures you never miss their voice.”
+> "Businesses don't fail from bad products — they fail from silent customers.  
+> Reputify ensures you never miss their voice."
 
 ---
 
-### 👥 **Team ReputeHub - Y3-05**
+### 👥 **Team Reputify - Y3-05**
 
 **Mission:** Empower businesses with AI-driven social intelligence that’s multilingual, ethical, and affordable.  
 **Vision:** Become South Asia’s leading AI reputation platform for SMEs.  
