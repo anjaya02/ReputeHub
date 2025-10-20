@@ -872,7 +872,7 @@ Reputify's AI Bot acts as the "brain" of the platform — continuously learning 
 
 ## 1️⃣3️⃣ **Pricing Model & Feature Plans**
 
-## 💰 **Section 11.5 – Pricing Model & Feature Plans (Revised)**
+## 💰 **Section 13 – Pricing Model & Feature Plans (Revised)**
 
 Reputify's subscription model offers three tiers—**Starter**, **Professional**, and **Business**—each tailored to different organization sizes and engagement levels.
 The structure provides an affordable entry point for small businesses while scaling smoothly for agencies and enterprise clients.
@@ -1054,13 +1054,6 @@ The system is designed to handle the unique challenges of reputation management 
 
 **_Document Version: 1.1 - Production-Ready Edition | Last Updated: October 20, 2025_**
 **_✅ All 14 core features + comprehensive edge case coverage_**
-
----
-
-## 🎨 12️⃣ Optional Enhancements for Wireframes
-
-- **Tooltip system** to explain AI metrics (for first-time users)
-- **Floating “Help” button** → opens a FAQ or support form
 
 ---
 
