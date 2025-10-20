@@ -67,7 +67,12 @@ Reputify Portal
 [Client User] ───► (Reputify System) ◄─── [Admin User]
        │                           │
        ▼                           ▼
- [Official APIs / Apify] → [NLP + DB] → [Dashboard + Alerts]
+ [Official APIs (Google, YouTube, Reddit, Facebook Graph)]
+       │
+ [Apify Automation (LinkedIn, Facebook Public)]
+       │
+       ▼
+ [NLP + MongoDB] → [Dashboard + Alerts]
 ```
 
 ### Level 1 (Expanded View)
@@ -81,7 +86,9 @@ Reputify Portal
    ▼
 (Backend: FastAPI)
    │
-   ├──► (Data Collection Layer: Apify + APIs)
+   ├──► (Official APIs: Google, YouTube, Reddit, Facebook Graph)
+   │
+   ├──► (Apify Platform: LinkedIn, Facebook Public Mentions)
    │
    ├──► (NLP Engine: Sentiment, Intent, Aspect)
    │
@@ -107,9 +114,25 @@ Reputify uses **MongoDB Atlas** for its flexible document-based data model, whic
     "email": "owner@cafe.lk",
     "plan": "Professional",
     "platforms": {
-      "facebook": { "connected": true, "page_id": "123" },
-      "linkedin": { "connected": false },
-      "reddit": { "connected": true }
+      "google_business": { "connected": true, "api_key": "encrypted_key" },
+      "youtube": { "connected": true, "api_key": "encrypted_key" },
+      "reddit": { "connected": true, "api_key": "encrypted_key" },
+      "facebook_page": {
+        "connected": true,
+        "page_id": "123",
+        "access_token": "encrypted_token",
+        "method": "graph_api"
+      },
+      "facebook_public": {
+        "connected": true,
+        "apify_actor_id": "actor_123",
+        "method": "apify"
+      },
+      "linkedin": {
+        "connected": false,
+        "apify_actor_id": null,
+        "method": "apify"
+      }
     },
     "created_at": "2025-10-19T10:00Z",
     "subscription_status": "active"
@@ -118,13 +141,15 @@ Reputify uses **MongoDB Atlas** for its flexible document-based data model, whic
     "_id": "ObjectId",
     "business_id": "ObjectId",
     "platform": "facebook",
+    "data_source": "graph_api", // or "apify" for public mentions
     "text": "The service was slow but food was good",
     "sentiment": { "label": "mixed", "score": 0.72 },
     "intent": "complaint",
     "aspect": ["service", "food"],
     "timestamp": "2025-10-19T12:00Z",
     "status": "new",
-    "original_url": "https://facebook.com/post/123"
+    "original_url": "https://facebook.com/post/123",
+    "cost_tier": "free" // or "paid" for Apify sources
   },
   "alert": {
     "_id": "ObjectId",
@@ -144,15 +169,16 @@ Reputify uses **MongoDB Atlas** for its flexible document-based data model, whic
 
 ```
 Client → Dashboard → Fetches mentions via FastAPI → Queries MongoDB
-FastAPI → Apify → Collects hashtags & mentions
-Apify → Sends structured JSON → FastAPI Ingest API
+FastAPI → Official APIs (Google, YouTube, Reddit, Facebook Graph) → Collects own page data
+FastAPI → Apify → Collects public hashtags & mentions (LinkedIn, Facebook Public)
+APIs/Apify → Sends structured JSON → FastAPI Ingest API
 FastAPI → NLP Engine → Analyzes sentiment & intent
-NLP → MongoDB → Saves processed data
+NLP → MongoDB → Saves processed data with source attribution
 MongoDB → Dashboard → Updates charts & alerts
 Dashboard → Twilio → Sends notification to user
 ```
 
-> "Sequence flow representing automated mention detection, AI analysis, and alert delivery."
+> "Sequence flow representing hybrid data collection (Official APIs + Apify), AI analysis, and alert delivery with cost optimization."
 
 ---
 
@@ -266,7 +292,8 @@ The dashboard integrates AI Bot outputs into real-time widgets such as **Sentime
 
 - Filters bar (dropdowns):
 
-  - Platform (Facebook, LinkedIn, Reddit, etc.)
+  - Platform (Google Business, YouTube, Reddit, Facebook Page, Facebook Public, LinkedIn)
+  - Data Source (Official API, Apify)
   - Sentiment (Positive / Negative / Neutral)
   - Intent (Complaint / Praise / Question)
   - Date range
@@ -274,10 +301,11 @@ The dashboard integrates AI Bot outputs into real-time widgets such as **Sentime
 - Search bar (keyword)
 - Mentions list (table or cards):
 
-  - Platform icon
+  - Platform icon with source indicator (API/Apify badge)
   - Mention text (first 100 chars)
   - Sentiment color badge
   - Intent icon (💢 Complaint / 👍 Praise)
+  - Cost tier indicator (Free/Paid)
   - Timestamp
   - "View Details" button → goes to Mention Details page
 
@@ -405,15 +433,17 @@ The dashboard integrates AI Bot outputs into real-time widgets such as **Sentime
 
 - Section: “Connected Platforms”
 
-  - Facebook → [Connected ✅] / [Connect]
-  - LinkedIn → [Connected ✅] / [Connect]
-  - Reddit → [Connected ✅]
-  - Google → [Connected ✅]
-  - YouTube → [Connected ✅]
+  - **Google Business** → [Connected ✅] / [Connect] (Official API - Free)
+  - **YouTube** → [Connected ✅] / [Connect] (Official API - Free)
+  - **Reddit** → [Connected ✅] / [Connect] (Official API - Free)
+  - **Facebook Page** → [Connected ✅] / [Connect Facebook Page] (Graph API - Free)
+  - **Facebook Public Mentions** → [Connected ✅] / [Connect Public Tracking] (Apify - Professional Plan)
+  - **LinkedIn** → [Connected ✅] / [Connect] (Apify - Paid)
 
 - Button: "Add Integration"
-- Info: "Your data refreshes every 8 hours."
+- Info: "Official APIs refresh every 15 minutes. Apify data refreshes every 8 hours."
 - Toggle: Enable/disable auto-alerts per platform.
+- Cost indicator: Show "Free" vs "Paid" next to each integration
 
 **Integration Edge Cases:**
 
@@ -425,6 +455,31 @@ The dashboard integrates AI Bot outputs into real-time widgets such as **Sentime
 - OAuth flow interrupted → return to integrations with error message
 
 > _"If Facebook token expires, an alert shows: 'Reauthorize your Facebook Page to continue tracking mentions.'"_
+
+**Facebook Graph API OAuth Flow:**
+
+When user clicks "Connect Facebook Page":
+
+1. **Authorization Request:** Redirect to Facebook OAuth with required permissions (pages_read_engagement, pages_show_list)
+2. **User Consent:** User grants access to their Facebook pages
+3. **Authorization Code:** Facebook redirects back with authorization code
+4. **Access Token Exchange:** Backend exchanges code for long-lived page access token
+5. **Page Selection:** If user has multiple pages, show selection UI
+6. **Token Storage:** Encrypt and store page access token in MongoDB
+7. **Verification:** Test API call to confirm connection works
+8. **Success State:** Update UI to show "Connected ✅" with page name
+
+**Facebook Public Mentions (Apify) Flow:**
+
+When user clicks "Connect Public Tracking":
+
+1. **Plan Verification:** Check if user has Professional/Business plan
+2. **Configuration:** Set up Apify actor with business name/keywords
+3. **Cost Warning:** Show estimated monthly cost based on tracking frequency
+4. **Confirmation:** User confirms understanding of paid feature
+5. **Actor Deployment:** Configure and deploy Apify Facebook scraper
+6. **Test Run:** Execute test run to validate configuration
+7. **Success State:** Update UI to show "Connected ✅" with next run time
 
 ---
 
