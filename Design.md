@@ -580,7 +580,7 @@ Redirect → Login page.
 
 ---
 
-## 1️⃣0️⃣ **Technical Stack and Implementation**
+## 🔟 **Technical Stack and Implementation**
 
 ### Frontend Architecture
 
