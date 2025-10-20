@@ -617,7 +617,151 @@ Redirect → Login page.
 
 ---
 
-## 🔟 **API Endpoints Structure**
+## � **Section 10.3 – Authentication and Integrations Architecture**
+
+Reputify employs a **dual authentication model** that separates platform access from user access. This design ensures strong security, clear role management, and seamless connectivity to multiple social media data sources.
+
+---
+
+### **1️⃣ User Authentication (System Access)**
+
+User authentication governs access to Reputify's internal platform and dashboard.
+
+#### **Implementation:**
+
+- **Framework:** FastAPI (backend) and Next.js (frontend)
+- **Authentication Type:** Custom **JWT (JSON Web Token)**–based system
+- **Encryption:** Bcrypt for password hashing, HTTPS for all communication
+
+Each registered user receives two tokens:
+
+- **Access Token:** Short-lived (15–30 minutes) for secure API access
+- **Refresh Token:** Longer lifespan (7 days) for session continuity
+
+JWT payload example:
+
+```json
+{
+  "sub": "user_id",
+  "tenant_id": "business_id",
+  "role": "client",
+  "exp": 1739942000
+}
+```
+
+#### **Key Features:**
+
+- Role-based access control (Admin / Client)
+- Tenant isolation through unique `tenant_id`
+- Stateless authentication (no server session storage)
+- Refresh token rotation for security
+- Middleware for token verification on every API request
+
+This allows each business (tenant) to log in, view only their own data, and manage their reputation activities independently.
+
+---
+
+### **2️⃣ Social Integrations Authentication (Data Access)**
+
+Reputify connects to external social media platforms to collect feedback, mentions, and reviews.
+This requires **separate authentication flows** handled via **Apify** and **official APIs**, depending on the platform.
+
+| Platform            | Authentication Type             | Provider            | Usage                        |
+| ------------------- | ------------------------------- | ------------------- | ---------------------------- |
+| **Facebook**        | Automated login via Apify Actor | Apify               | Public mentions & hashtags   |
+| **LinkedIn**        | Automated login via Apify Actor | Apify               | Public posts & hashtags      |
+| **Google Business** | OAuth 2.0                       | Official Google API | Reviews & ratings            |
+| **YouTube**         | OAuth 2.0                       | YouTube Data API    | Video comments               |
+| **Reddit**          | OAuth 2.0                       | Reddit API          | Brand mentions & discussions |
+
+When a business connects its accounts through the **Integrations Page**, the system performs one of two flows:
+
+1. **Apify-based connection:**
+   Uses Reputify's preconfigured Apify actors to handle scraping of public data without needing the business's direct login credentials.
+2. **Official API-based connection (OAuth):**
+   Redirects users to the platform's consent page (e.g., Google or Reddit) and stores the returned access tokens securely in the backend.
+
+---
+
+### **3️⃣ Secure Token Storage and Data Handling**
+
+All access tokens and platform credentials are stored securely within MongoDB Atlas using AES encryption.
+These tokens are accessible only to backend services that run scheduled collection jobs every 8 hours.
+
+Example storage structure:
+
+```json
+{
+  "business_id": "ObjectId",
+  "platforms": {
+    "google": { "connected": true, "token": "ya29.a0AR..." },
+    "facebook": { "connected": true, "type": "apify" },
+    "linkedin": { "connected": true, "type": "apify" }
+  }
+}
+```
+
+No sensitive access tokens or credentials are ever exposed on the frontend.
+The backend is the only layer authorized to initiate Apify runs or API fetches on behalf of the business.
+
+---
+
+### **4️⃣ Combined Authentication Flow**
+
+```
+(Client Login via JWT)
+       ↓
+[Reputify Backend (FastAPI)]
+       ↓
+(Auth Middleware validates JWT)
+       ↓
+[Integrations Module]
+       ↓
+{Facebook, LinkedIn via Apify}
+{Google, YouTube, Reddit via OAuth APIs}
+       ↓
+[Data Collection Layer → NLP Engine → MongoDB]
+       ↓
+[Dashboard Visualization]
+```
+
+---
+
+### **5️⃣ Advantages of the Dual Model**
+
+| Benefit                            | Description                                                                    |
+| ---------------------------------- | ------------------------------------------------------------------------------ |
+| **Separation of responsibilities** | User auth (JWT) and data auth (OAuth/Apify) are independent for better control |
+| **High security**                  | Tokens encrypted and isolated per tenant                                       |
+| **Scalability**                    | Supports future platform integrations (TikTok, Threads) easily                 |
+| **Compliance**                     | Follows OAuth 2.0 standards and Apify's ethical scraping policies              |
+| **Flexibility**                    | Enables multi-tenant structure and admin supervision                           |
+
+---
+
+### **6️⃣ Example User Scenario**
+
+1. **Login:**
+   The business owner logs into Reputify with email and password (JWT).
+2. **Integrate Platforms:**
+   Navigates to _Integrations Page_ and clicks "Connect Google Business" or "Connect via Apify (Facebook)."
+3. **Authorize:**
+   Completes OAuth consent (for Google) or automatically uses Apify actor setup (for Facebook/LinkedIn).
+4. **Automation:**
+   Every 8 hours, Reputify fetches new mentions using stored credentials.
+5. **Visualization:**
+   The dashboard updates sentiment trends, AI replies, and alerts automatically.
+
+---
+
+### **7️⃣ Summary**
+
+Reputify's **custom JWT authentication** ensures secure platform access for all users, while **Apify and OAuth tokens** enable trusted connections with external data sources.
+This dual model provides complete control, data privacy, and seamless automation for multi-tenant SaaS operations.
+
+---
+
+## �🔟 **API Endpoints Structure**
 
 ### Authentication Endpoints
 
@@ -728,31 +872,62 @@ Reputify's AI Bot acts as the "brain" of the platform — continuously learning 
 
 ## 1️⃣3️⃣ **Pricing Model & Feature Plans**
 
-Reputify follows a **tiered Software-as-a-Service (SaaS) pricing model** targeted at small and medium enterprises (SMEs) in South Asia. Each plan offers progressively advanced features and automation capabilities while maintaining affordability compared to global competitors.
+## 💰 **Section 11.5 – Pricing Model & Feature Plans (Revised)**
 
-### **Pricing Tiers**
+Reputify's subscription model offers three tiers—**Starter**, **Professional**, and **Business**—each tailored to different organization sizes and engagement levels.
+The structure provides an affordable entry point for small businesses while scaling smoothly for agencies and enterprise clients.
 
-| Plan             | Monthly Price       | Target User                      | Key Features                                                                             |
-| ---------------- | ------------------- | -------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Starter**      | LKR 3,000 / USD 10  | Small local businesses           | Google & Reddit monitoring, sentiment analysis, dashboard access                         |
-| **Professional** | LKR 9,000 / USD 30  | Growing SMEs                     | + Facebook & LinkedIn tracking (via Apify), alerts, AI reply suggestions, weekly reports |
-| **Business**     | LKR 24,000 / USD 75 | Agencies & multi-location brands | + Multi-user accounts, custom NLP tuning, API access, priority alerts, branded reports   |
+---
+
+### **Pricing Overview**
+
+| Plan             | Monthly Price       | Target Customers                 | Description                                                                      |
+| ---------------- | ------------------- | -------------------------------- | -------------------------------------------------------------------------------- |
+| **Starter**      | LKR 3,000 / USD 10  | Small cafés, salons, freelancers | Core AI-powered monitoring for Google & Facebook with basic analytics            |
+| **Professional** | LKR 9,000 / USD 30  | Growing SMEs                     | Adds additional platforms, automation, and alerting for active social engagement |
+| **Business**     | LKR 24,000 / USD 75 | Agencies / multi-branch brands   | Expands coverage, multi-user collaboration, and advanced analytics               |
+
+---
 
 ### **Feature Comparison**
 
-| Feature                                | Starter | Professional | Business |
-| -------------------------------------- | ------- | ------------ | -------- |
-| Google & Reddit monitoring             | ✅      | ✅           | ✅       |
-| Facebook + LinkedIn monitoring (Apify) | ❌      | ✅           | ✅       |
-| YouTube comment analysis               | ✅      | ✅           | ✅       |
-| Real-time alerts (WhatsApp / Email)    | ❌      | ✅           | ✅       |
-| AI reply suggestions                   | ❌      | ✅           | ✅       |
-| Reports & Exports (PDF/CSV)            | ✅      | ✅           | ✅       |
-| Custom keywords / hashtags             | ❌      | ✅           | ✅       |
-| Admin dashboard access                 | ❌      | ❌           | ✅       |
-| Multi-user accounts                    | ❌      | ❌           | ✅       |
-| Data retention period                  | 30 days | 90 days      | 180 days |
-| Priority support                       | ❌      | ✅           | ✅       |
+| Feature                         | **Starter**          | **Professional**              | **Business**                                    |
+| ------------------------------- | -------------------- | ----------------------------- | ----------------------------------------------- |
+| **Platforms Covered**           | Google + Facebook    | Google + Facebook + YouTube   | Google + Facebook + LinkedIn + Reddit + YouTube |
+| **AI Reply Suggestions**        | ✅ Basic (text only) | ✅ Tone-aware & editable      | ✅ Adaptive AI learning from previous replies   |
+| **Sentiment & Intent Analysis** | ✅ English only      | ✅ English + Sinhala/Tamil    | ✅ Multilingual + confidence score metrics      |
+| **Mentions Feed & Search**      | ✅ Manual refresh    | ✅ Auto-refresh every 8 hours | ✅ On-demand real-time updates                  |
+| **Alerts & Notifications**      | ✅ Email only        | ✅ Email + SMS                | ✅ Email + SMS                                  |
+| **Reports & Analytics**         | ✅ Monthly summary   | ✅ Weekly & monthly analysis  | ✅ Custom date range + branded PDFs             |
+| **Data Retention**              | 30 days              | 90 days                       | 180 days                                        |
+| **Integrations Management**     | Single business      | Up to 3 connected platforms   | Up to 10 platforms / multi-branch               |
+| **User Access**                 | 1 user               | 2 users                       | Multi-user team access                          |
+| **Scheduler & Automation**      | Shared 8-hour batch  | Dedicated 8-hour slot         | Priority scheduler (faster queue)               |
+| **Support**                     | Email only           | Email + Voice                 | Email + Voice + WhatsApp                        |
+
+---
+
+### **Billing and Data Retention Policy**
+
+| Plan         | Data Retention      | Renewal Cycle            |
+| ------------ | ------------------- | ------------------------ |
+| Starter      | 30 days of history  | Auto-renew every 30 days |
+| Professional | 90 days of history  | Auto-renew every 30 days |
+| Business     | 180 days of history | Auto-renew every 30 days |
+
+A 7-day grace period is provided after expiry to allow renewal without data loss. After the retention period, older mentions and reports are archived and then purged automatically.
+
+---
+
+### **Strategic Justification**
+
+- **Starter Plan:** Delivers immediate AI value at minimal cost—ideal for first-time users. Alerts are by email so the plan remains low-cost. Support is email-only to keep operational overhead low.
+- **Professional Plan:** Adds automation, broader platform coverage and more proactive communications — SMS alerts ensure critical mentions are noticed quickly; voice support adds higher-touch assistance.
+- **Business Plan:** Designed for agencies and larger brands with teams; support includes WhatsApp for rapid, high-priority communication while alerts remain via email and SMS for systemic consistency.
+
+This tiered model ensures affordability, scalability, and a clear upgrade path based on automation needs and data volume.
+
+---
 
 ### **Billing Model & Subscription Policy**
 
@@ -761,14 +936,13 @@ Reputify follows a **tiered Software-as-a-Service (SaaS) pricing model** targete
 - Payment gateway integration via **Stripe API** or local provider (**PayHere.lk**) for regional currency support
 
 **Subscription Renewal Policy:**
-All Reputify plans operate on a monthly subscription basis. Each package renews automatically every 30 days unless cancelled by the user. Businesses may also manually renew before expiry. Non-payment or cancellation pauses data collection and alerting features. A 7-day grace period allows reactivation without data loss. Data retention depends on plan type — 30 days for Starter, 90 days for Professional, and 180 days for Business — after which archived data is securely purged.
+All Reputify plans operate on a monthly subscription basis. Each package renews automatically every 30 days unless cancelled by the user. Businesses may also manually renew before expiry. Non-payment or cancellation pauses data collection and alerting features. A 7-day grace period allows reactivation without data loss.
 
-**Data Retention Policy:**
+✅ **Summary**
 
-- Starter Plan: 30 days
-- Professional Plan: 90 days
-- Business Plan: 180 days
-  After the retention period, older mentions and reports are automatically deleted or archived.
+> The revised pricing design balances accessibility with power: every user experiences Reputify's core AI intelligence from the Starter plan, while higher tiers add broader platform coverage, faster automation, and multi-user collaboration. This ensures steady user adoption and long-term customer growth.
+
+---
 
 ### **Competitive Advantage**
 
@@ -778,7 +952,7 @@ All Reputify plans operate on a monthly subscription basis. Each package renews 
 - **Regional payment methods** and currency support
 
 **In summary:**
-Reputify's pricing structure ensures accessibility for small businesses while scaling with enterprise needs, creating a sustainable and competitive SaaS model.
+Reputify's pricing structure ensures accessibility for small businesses while scaling with enterprise needs, creating a sustainable and competitive SaaS model that aligns perfectly with all 14 core system features.
 
 ---
 
