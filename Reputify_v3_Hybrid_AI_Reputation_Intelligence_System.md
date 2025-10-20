@@ -2,7 +2,7 @@
 
 **Version:** 3.0 (De-risked & Scalable)  
 **Purpose:** Build a multilingual, AI-powered SaaS platform for managing, analyzing, and improving business reputation — safely and affordably.  
-**Focus:** Real-time insights, smart analytics, and human-centered AI engagement without scraping risks.
+**Focus:** Real-time insights, smart analytics, and human-centered AI engagement using a **hybrid data collection model** combining both **official APIs** and **third-party automation platforms** (Apify) for comprehensive coverage.
 
 ---
 
@@ -26,14 +26,14 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ## 2. **The Reputify Solution**
 
-> **Reputify** helps businesses actively monitor, understand, and improve their online reputation through multilingual AI — without violating platform policies.
+> **Reputify** helps businesses actively monitor, understand, and improve their online reputation through multilingual AI using a **hybrid data collection approach** that combines official APIs with compliant automation platforms.
 
 ### **Core Value Proposition:**
 
 **🔍 Listen → 🧠 Analyze → 🤖 Engage → 📈 Improve**
 
-- **👂 Listen:** Gather all reviews from verified business platforms.
-- **📊 Analyze:** Use NLP & ML to find patterns, emotions, and trends.
+- **👂 Listen:** Gather all reviews and mentions using **official APIs** (Google Business, YouTube, Reddit) and **Apify automation** for publicly available content from Facebook and LinkedIn.
+- **📊 Analyze:** Use NLP & ML to find patterns, emotions, and trends across all collected data.
 - **💬 Engage:** Suggest human-approved AI responses in local languages.
 - **🚀 Improve:** Predict rating trends and highlight issues to prevent crises.
 
@@ -47,7 +47,7 @@ Small and medium businesses often face the same critical challenge — **they do
 | **v2 – Intelligence** | Smart Analytics           | Aspect-based insights, review plausibility analysis, predictive analysis           |
 | **v3 – Engagement**   | Social Awareness & Ethics | Intent detection, AI engagement (human-approved), issue extraction, feedback loops |
 
-🛡️ **Removed High-Risk Component:** _Social Media Scraping Agent_ (replaced by API-based and user-driven monitoring).
+🛡️ **Enhanced Data Collection:** _Implemented hybrid approach using official APIs + Apify automation for public social content_ (replaced high-risk direct scraping).
 
 ✅ **Total Features Now:** **14 Safe, Scalable, and Realistic Modules**
 
@@ -69,17 +69,31 @@ Small and medium businesses often face the same critical challenge — **they do
 
 #### 1. **Multi-Platform Review Integration**
 
-**Purpose:** Aggregate customer reviews from all key platforms.  
-**Sources:** Google Business Profile, Facebook Pages, TripAdvisor (API + Manual Import).  
+**Purpose:** Aggregate customer reviews and mentions from all key platforms using a comprehensive hybrid approach.  
+**Data Collection Strategy:**
+
+**🔌 Official API Integration (Primary Sources):**
+
+- Google Business Profile API → Reviews & Ratings
+- YouTube Data API → Comments & Community Posts
+- Reddit API → Mentions & Discussions
+- TripAdvisor (Manual Import + API where available)
+
+**🤖 Apify Automation (Secondary Sources):**
+
+- Facebook Hashtags & Mentions Scraper → Public posts mentioning business
+- LinkedIn Company Page Scraper → Public company mentions and hashtags
+
 **How It Works:**
 
-- 🔄 Fetches reviews every 15 minutes using official APIs.
-- 🗂️ Stores data with timestamps, ratings, and reviewer info.
-- 📋 Unified dashboard shows all reviews in one view.
+- 🔄 **APIs:** Fetch structured data every 15 minutes using official APIs.
+- 🕸️ **Apify:** Collects publicly available mentions via compliant automation that manages proxies, rate limits, and platform restrictions.
+- 🗂️ Stores unified data with timestamps, ratings, sentiment, and source platform.
+- 📋 Single dashboard shows all reviews and mentions in one consolidated view.
 
 **Example:**
 
-> A café receives a new 2⭐ review on Facebook. It appears instantly on the dashboard beside its Google reviews.
+> A café receives a new 2⭐ review on Google and a public Facebook post saying "Great coffee at [Business Name] but service was slow." Both appear instantly on the unified dashboard with source attribution.
 
 ---
 
@@ -287,17 +301,18 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ### 🛍️ **Scenario 3 – Fashion Retail Brand Protects Its Online Image**
 
-**Problem:** Sudden 1⭐ reviews appear on Google — all using similar wording.
+**Problem:** Sudden negative sentiment spikes appear across multiple platforms — Google reviews and Facebook mentions.
 
 **Reputify in Action:**
 
-1. **Review Plausibility (v2)** detects repetitive phrasing → low authenticity score.
-2. **Alert System (v1)** instantly notifies the PR manager via WhatsApp.
-3. **Aspect Sentiment (v2)** isolates “delivery” as the mentioned pain point.
-4. **AI Dashboard (v1)** visualizes review clusters by keyword similarity.
-5. **Ethical Engagement Bot (v3)** drafts a calm, factual public response.
+1. **Hybrid Data Collection** captures 1⭐ Google reviews + negative Facebook posts mentioning the brand.
+2. **Review Plausibility (v2)** detects repetitive phrasing patterns → flags potentially coordinated attacks.
+3. **Alert System (v1)** instantly notifies the PR manager via WhatsApp with cross-platform evidence.
+4. **Aspect Sentiment (v2)** isolates "delivery" complaints across both platforms, showing consistent issue pattern.
+5. **AI Dashboard (v1)** visualizes sentiment clusters by platform and keyword similarity.
+6. **Ethical Engagement Bot (v3)** drafts a calm, factual public response addressing the legitimate delivery concerns.
 
-**Result:** Brand transparency praised online; competitor-originated fake reviews reported and removed.
+**Result:** Brand responds transparently to real delivery issues while reporting coordinated fake reviews; customer trust actually increases due to proactive communication.
 
 ---
 
@@ -334,22 +349,49 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ## 7. **Technical Stack (Budget-Friendly SaaS)**
 
-| **Layer**         | **Tools & Frameworks**                      | **Notes**                  |
-| ----------------- | ------------------------------------------- | -------------------------- |
-| **Frontend**      | React (Next.js), Tailwind CSS               | Responsive, modern UI      |
-| **Backend**       | FastAPI (Python), REST + GraphQL            | High performance, scalable |
-| **Database**      | PostgreSQL (Supabase)                       | Structured review data     |
-| **ML/NLP**        | HuggingFace Transformers, BERTopic, Prophet | Free multilingual models   |
-| **AI Replies**    | Gemini / LLaMA (local)                      | Low-cost inference         |
-| **Notifications** | Twilio, SendGrid                            | Pay-as-you-go              |
-| **Hosting**       | Vercel + Railway                            | Free tier for MVP          |
-| **Deployment**    | Docker, GitHub Actions CI/CD                | Automated builds           |
+| **Layer**           | **Tools & Frameworks**                      | **Notes**                                    |
+| ------------------- | ------------------------------------------- | -------------------------------------------- |
+| **Frontend**        | React (Next.js), Tailwind CSS               | Responsive, modern UI                        |
+| **Backend**         | FastAPI (Python), REST + GraphQL            | High performance, scalable                   |
+| **Database**        | MongoDB Atlas                               | Flexible document storage for varied data    |
+| **Data Collection** | Official APIs + Apify Platform              | Hybrid approach: APIs + compliant automation |
+| **ML/NLP**          | HuggingFace Transformers, BERTopic, Prophet | Free multilingual models                     |
+| **AI Replies**      | Gemini / LLaMA (local)                      | Low-cost inference                           |
+| **Notifications**   | Twilio, SendGrid                            | Pay-as-you-go                                |
+| **Hosting**         | Vercel + Railway                            | Free tier for MVP                            |
+| **Deployment**      | Docker, GitHub Actions CI/CD                | Automated builds                             |
 
-💰 **Approx. Monthly Cost (MVP): $15–25**
+💰 **Approx. Monthly Cost (MVP): $25–35** (includes Apify usage for social data)
 
 ---
 
-## 8. **SaaS Business Model**
+## 8. **Ethical Data Collection & Compliance**
+
+**Reputify's Hybrid Data Collection Model** operates under strict ethical guidelines to ensure responsible and compliant data gathering:
+
+### **🔐 Official API Sources (Primary - 100% Compliant)**
+
+- **Google Business Profile, YouTube, Reddit APIs:** Direct access through official channels with proper authentication and rate limiting.
+- **Full legal compliance** with platform terms of service and data usage policies.
+
+### **🤖 Apify Automation (Secondary - Controlled & Compliant)**
+
+- **Public Data Only:** Collects exclusively public posts, mentions, and hashtags—no private user information.
+- **Regulated Platform:** Apify maintains compliance with GDPR, handles proxy management, and respects platform rate limits.
+- **Ethical Scraping Standards:** All data collection follows industry best practices for responsible automation.
+- **No Personal Data Storage:** Focus on business mentions and sentiment, not individual user profiles.
+
+### **🛡️ Privacy & Security Measures**
+
+- **Data Minimization:** Only collect data directly relevant to business reputation monitoring.
+- **Secure Storage:** All data encrypted and stored with appropriate access controls in MongoDB Atlas.
+- **Transparent Operations:** Clear disclosure of data sources and collection methods to all users.
+
+> **Reputify does not engage in unauthorized data scraping.** All social content is collected through **Apify**, a regulated data automation platform that adheres to ethical scraping standards and maintains compliance with privacy regulations. Only public posts and comments are analyzed, and no personal or private user data is stored.
+
+---
+
+## 9. **SaaS Business Model**
 
 | **Plan**         | **Price (LKR)** | **Features**                                            | **Target Market**       |
 | ---------------- | --------------- | ------------------------------------------------------- | ----------------------- |
@@ -362,7 +404,7 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ---
 
-## 9. **Research & Innovation Value**
+## 10. **Research & Innovation Value**
 
 - 🧠 **NLP:** Multilingual sentiment & aspect extraction (Sinhala/Tamil/English).
 - 📈 **ML:** Predictive forecasting for customer satisfaction trends.
@@ -374,18 +416,21 @@ Strong cross-domain coverage (NLP + ML + Time-Series + Conversational AI).
 
 ---
 
-## 10. **Future Expansion (v3 Full)**
+## 11. **Future Expansion (v3 Full)**
 
 Planned for premium enterprise customers:
 
-- ✅ API-based social media monitoring for brand pages.
-- ✅ Competitor sentiment tracking.
-- ✅ Advanced trend visualization & AI coaching.
-- 🚫 **No scraping — all official, legal integrations only.**
+- ✅ **Extended Social Media Monitoring:** Expand Apify integration to additional platforms (TikTok, Threads, Instagram Stories) for comprehensive social listening.
+- ✅ **Advanced Competitor Intelligence:** Enhanced competitor sentiment tracking across all supported platforms.
+- ✅ **AI-Powered Trend Analysis:** Advanced trend visualization with predictive insights and AI coaching recommendations.
+- ✅ **Multi-Language Support Expansion:** Extend NLP models to support additional South Asian languages (Malayalam, Telugu, Bengali).
+- ✅ **Enterprise API Access:** White-label API for integration with existing business management systems.
+
+**All data collection maintains the same ethical hybrid model:** Official APIs as primary sources, with Apify automation for public social content where APIs are limited.
 
 ---
 
-## 11. **Expected Outcomes**
+## 12. **Expected Outcomes**
 
 | **Metric**                     | **Target**                     |
 | ------------------------------ | ------------------------------ |
@@ -396,20 +441,20 @@ Planned for premium enterprise customers:
 
 ---
 
-## 12. 🧱 **Realistically Buildable in 6 Months**
+## 13. 🧱 **Realistically Buildable in 6 Months**
 
 ### ✅ **Must-Have (Fully Buildable MVP)**
 
 **Focus for the first 4 months:**
 
-1.  **Review Integration (v1.1)** – API + manual import.
-2.  **Basic Sentiment Classification (v1.2)** – multilingual model fine-tuned.
+1.  **Hybrid Review Integration (v1.1)** – Official APIs + Apify automation setup with unified data pipeline.
+2.  **Basic Sentiment Classification (v1.2)** – multilingual model fine-tuned for social media and review content.
 3.  **AI Response Generator (v1.3)** – LLaMA/Gemini prompt pipeline with approval layer.
-4.  **Dashboard + Alerts (v1.4, v1.5)** – real-time sentiment charts & WhatsApp/email alerts.
-5.  **Aspect-Based Analysis (v2.6)** – fine-tuned XLM-R model with aspect dictionary.
-6.  **Issue Extraction + Reporting (v3.12)** – BERTopic + summarization (BART).
+4.  **Dashboard + Alerts (v1.4, v1.5)** – real-time sentiment charts & WhatsApp/email alerts across all platforms.
+5.  **Aspect-Based Analysis (v2.6)** – fine-tuned XLM-R model with aspect dictionary for multi-platform content.
+6.  **Issue Extraction + Reporting (v3.12)** – BERTopic + summarization (BART) for cross-platform pattern detection.
 
-💡 These 6 alone deliver a polished, demo-ready SaaS MVP — real AI + clear business value.
+💡 These 6 alone deliver a polished, demo-ready SaaS MVP with comprehensive data coverage — real AI + clear business value.
 
 ### ⚙️ **Phase 2 (Prototype-Level)**
 
@@ -430,7 +475,7 @@ Can be conceptually demonstrated:
 - **Review Plausibility Analysis (v2.8)** – show algorithm logic + synthetic dataset demo.
 - **Feedback Loop (v3.13)** – mock email follow-up flow.
 
-## 13. **Conclusion**
+## 14. **Conclusion**
 
 **Reputify v3** evolves from a simple review manager to a full-fledged **AI Reputation Intelligence System**.
 
