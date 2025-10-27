@@ -1,19 +1,19 @@
-# 🏗️ Reputify - Complete System Design Documentation
+# 🏗️ Reputify - Social Listening System Design Documentation
 
 ## 1️⃣ **System Planning Overview**
 
 ### User Roles & Flows
 
-- **Client Users**: Business owners managing their reputation
-- **Admin Users**: System administrators overseeing platform operations
+- **Client Users**: Business owners monitoring their social media presence
+- **Admin Users**: System administrators managing data collection and platform operations
 
-### Core Modules Architecture
+### Core Modules Architecture - Social Listening Focus
 
-- **Dashboard**: Central hub for reputation metrics and insights
-- **Mentions Feed**: Comprehensive listing and filtering of all mentions
-- **Alerts System**: Real-time notifications for critical mentions
-- **Reports & Analytics**: Data visualization and export capabilities
-- **Settings & Integrations**: Account management and platform connections
+- **Dashboard**: Real-time social mentions and sentiment analytics
+- **Mentions Feed**: Comprehensive listing of all social media mentions across 7 platforms
+- **Alerts System**: Instant notifications for negative sentiment or mention spikes
+- **Analytics & Reports**: Cross-platform sentiment trends and engagement metrics
+- **Platform Integrations**: OAuth connections and data collection management
 
 ### Navigation Hierarchy (UML Sitemap)
 
@@ -59,45 +59,74 @@ Reputify Portal
 
 ---
 
-## 3️⃣ **Data Flow Diagram**
+## 3️⃣ **Social Listening Data Flow Architecture**
 
-### Level 0 (Context Diagram)
+### Core Principle
 
-```
-[Client User] ───► (Reputify System) ◄─── [Admin User]
-       │                           │
-       ▼                           ▼
- [Official APIs (Google, YouTube, Reddit, Facebook Graph)]
-       │
- [Apify Automation (LinkedIn, Facebook Public)]
-       │
-       ▼
- [NLP + MongoDB] → [Dashboard + Alerts]
-```
+> Use **official APIs** where possible (safe + free), and use **Apify or scraping** only where APIs don't allow public search.
 
-### Level 1 (Expanded View)
+### Level 0 (System Context)
 
 ```
-[Client User]
+[Client Users] ───► (Reputify Social Listening) ◄─── [Admin Users]
+       │                                         │
+       ▼                                         ▼
+ ┌─────────────────────────────────────────────────────┐
+ │  7-Platform Data Collection Layer                   │
+ │  ✅ Official APIs: FB/IG, YouTube, Reddit, Google  │
+ │  ⚙️  Apify Scrapers: TikTok, LinkedIn, Public      │
+ └─────────────────┬───────────────────────────────────┘
+                   ▼
+ [NLP Processing + MongoDB] → [Real-time Dashboard + Smart Alerts]
+```
+
+### Level 1 (Detailed Architecture)
+
+```
+[Business Owners]
    │
    ▼
-(Frontend: Next.js)
+(Dashboard: Next.js + React)
    │
    ▼
-(Backend: FastAPI)
+(API Gateway: FastAPI)
    │
-   ├──► (Official APIs: Google, YouTube, Reddit, Facebook Graph)
+   ├──► 🔵 Official APIs (Free)
+   │    ├── Facebook Graph API (OAuth)
+   │    ├── Instagram Graph API (Business)
+   │    ├── YouTube Data API
+   │    ├── Reddit API
+   │    └── Google Places API
    │
-   ├──► (Apify Platform: LinkedIn, Facebook Public Mentions)
+   ├──► ⚙️ Apify Platform (Paid)
+   │    ├── TikTok Scrapers
+   │    ├── LinkedIn Scrapers
+   │    └── Facebook Public Search
    │
-   ├──► (NLP Engine: Sentiment, Intent, Aspect)
+   ├──► 🧠 NLP Pipeline
+   │    ├── Language Detection
+   │    ├── Sentiment Analysis
+   │    ├── Entity Extraction
+   │    └── Deduplication
    │
-   ├──► (Database: MongoDB Atlas)
+   ├──► 💾 MongoDB Atlas
+   │    ├── Mentions Collection
+   │    ├── Clients Collection
+   │    └── Analytics Cache
    │
-   └──► (Notification Engine: Twilio / Email)
-   │
-   ▼
-[Dashboard + Reports]
+   └──► 🔔 Alert System
+        ├── SMS (Twilio)
+        ├── Email (SendGrid)
+        └── WhatsApp API
+```
+
+### Operational Workflow
+
+```
+Scheduler (Cron) → Data Collectors → Processing Pipeline → Storage → Dashboard Updates
+     ↓                    ↓                ↓              ↓            ↓
+Every 15min-4h     API Calls +      Language +      MongoDB     Real-time
+(by platform)     Apify Runs     Sentiment NLP    Documents      Charts
 ```
 
 ---
@@ -213,15 +242,16 @@ Reputify's design follows **clarity, simplicity, and accessibility** principles.
 
 ### 🏠 1️⃣ **Landing Page (Public)**
 
-**Purpose:** Marketing site for new visitors.
+**Purpose:** Marketing site showcasing social listening capabilities.
 **Key sections:**
 
-- Header (Logo, Nav: "Features", "Pricing", "Login", "Sign Up")
+- Header (Logo, Nav: "Features", "Pricing", "About", "Contact", "Login", "Sign Up")
 - Hero section (Tagline: _"Listen Smarter. Respond Faster."_)
 - Features overview (4 cards: "Monitor", "Analyze", "Engage", "Improve")
+- Platform coverage showcase (7 platform icons: Facebook, Instagram, Reddit, LinkedIn, TikTok, YouTube, Google Reviews)
 - Pricing table (Starter / Professional / Business)
 - CTA banner ("Start Free Trial")
-- Footer (Links + contact info)
+- Footer (Contact: info@reputify.lk, +94 711687980)
 
 ---
 
@@ -934,31 +964,32 @@ The structure provides an affordable entry point for small businesses while scal
 
 ---
 
-### **Pricing Overview**
+### **Pricing Overview - Social Listening Tiers**
 
-| Plan             | Monthly Price       | Target Customers                 | Description                                                                      |
-| ---------------- | ------------------- | -------------------------------- | -------------------------------------------------------------------------------- |
-| **Starter**      | LKR 3,000 / USD 10  | Small cafés, salons, freelancers | Core AI-powered monitoring for Google & Facebook with basic analytics            |
-| **Professional** | LKR 9,000 / USD 30  | Growing SMEs                     | Adds additional platforms, automation, and alerting for active social engagement |
-| **Business**     | LKR 24,000 / USD 75 | Agencies / multi-branch brands   | Expands coverage, multi-user collaboration, and advanced analytics               |
+| Plan             | Monthly Price       | Target Customers                 | Platform Coverage                                                        |
+| ---------------- | ------------------- | -------------------------------- | ------------------------------------------------------------------------ |
+| **Starter**      | LKR 3,000 / USD 10  | Small cafés, salons, freelancers | Google Reviews + Facebook/Instagram (own pages) - Basic social listening |
+| **Professional** | LKR 9,000 / USD 30  | Growing SMEs                     | + YouTube + Reddit + Public mentions - Comprehensive social monitoring   |
+| **Business**     | LKR 24,000 / USD 75 | Agencies / multi-branch brands   | All 7 platforms + TikTok + LinkedIn - Complete social intelligence       |
 
 ---
 
-### **Feature Comparison**
+### **Feature Comparison - Social Listening Edition**
 
-| Feature                         | **Starter**          | **Professional**              | **Business**                                    |
-| ------------------------------- | -------------------- | ----------------------------- | ----------------------------------------------- |
-| **Platforms Covered**           | Google + Facebook    | Google + Facebook + YouTube   | Google + Facebook + LinkedIn + Reddit + YouTube |
-| **AI Reply Suggestions**        | ✅ Basic (text only) | ✅ Tone-aware & editable      | ✅ Adaptive AI learning from previous replies   |
-| **Sentiment & Intent Analysis** | ✅ English only      | ✅ English + Sinhala/Tamil    | ✅ Multilingual + confidence score metrics      |
-| **Mentions Feed & Search**      | ✅ Manual refresh    | ✅ Auto-refresh every 8 hours | ✅ On-demand real-time updates                  |
-| **Alerts & Notifications**      | ✅ Email only        | ✅ Email + SMS                | ✅ Email + SMS                                  |
-| **Reports & Analytics**         | ✅ Monthly summary   | ✅ Weekly & monthly analysis  | ✅ Custom date range + branded PDFs             |
-| **Data Retention**              | 30 days              | 90 days                       | 180 days                                        |
-| **Integrations Management**     | Single business      | Up to 3 connected platforms   | Up to 10 platforms / multi-branch               |
-| **User Access**                 | 1 user               | 2 users                       | Multi-user team access                          |
-| **Scheduler & Automation**      | Shared 8-hour batch  | Dedicated 8-hour slot         | Priority scheduler (faster queue)               |
-| **Support**                     | Email only           | Email + Voice                 | Email + Voice + WhatsApp                        |
+| Feature                    | **Starter**                  | **Professional**                     | **Business**                                |
+| -------------------------- | ---------------------------- | ------------------------------------ | ------------------------------------------- |
+| **Platforms Covered**      | Google Reviews + Facebook/IG | + YouTube + Reddit + Public mentions | All 7 platforms (+ TikTok + LinkedIn)       |
+| **Data Collection Method** | Official APIs only           | APIs + Limited Apify                 | APIs + Full Apify scraping                  |
+| **Mention Types**          | Reviews + Own page comments  | + Public hashtags & brand mentions   | + TikTok videos + LinkedIn discussions      |
+| **Sentiment Analysis**     | ✅ English only              | ✅ English + Sinhala/Tamil           | ✅ Multilingual + confidence scores         |
+| **Real-time Monitoring**   | ✅ Every 4 hours             | ✅ Every 2 hours                     | ✅ Every 30 minutes                         |
+| **Alerts & Notifications** | ✅ Email only                | ✅ Email + SMS                       | ✅ Email + SMS + WhatsApp                   |
+| **Analytics Dashboard**    | ✅ Basic charts              | ✅ Cross-platform sentiment trends   | ✅ Advanced analytics + predictive insights |
+| **Data Retention**         | 30 days                      | 90 days                              | 180 days                                    |
+| **API Access**             | Read-only dashboard          | Basic API access                     | Full API + webhook integrations             |
+| **User Access**            | 1 user                       | 2 users                              | Multi-user team access                      |
+| **Collection Frequency**   | Shared queue (slower)        | Dedicated slot (faster)              | Priority processing (fastest)               |
+| **Support**                | Email only                   | Email + Voice                        | Email + Voice + WhatsApp                    |
 
 ---
 
@@ -995,7 +1026,38 @@ All Reputify plans operate on a monthly subscription basis. Each package renews 
 
 ✅ **Summary**
 
-> The revised pricing design balances accessibility with power: every user experiences Reputify's core AI intelligence from the Starter plan, while higher tiers add broader platform coverage, faster automation, and multi-user collaboration. This ensures steady user adoption and long-term customer growth.
+> The social listening pricing model provides comprehensive platform coverage while maintaining cost efficiency through strategic API usage. Official APIs handle the majority of data collection for free, while Apify automation fills gaps where platforms don't offer public search capabilities.
+
+---
+
+## 1️⃣4️⃣ **Social Listening Cost Structure**
+
+### **Monthly Operational Costs (Estimated)**
+
+| Component                     | Tool/Service                         | Monthly Cost  | Notes                          |
+| ----------------------------- | ------------------------------------ | ------------- | ------------------------------ |
+| **Official APIs (Free Tier)** | FB/IG Graph, YouTube, Reddit, Google | **$0**        | Within free quota limits       |
+| **Apify Automation**          | TikTok, LinkedIn, FB Public Search   | **$20-30**    | Pay-per-use, scales with usage |
+| **Frontend Hosting**          | Vercel                               | **Free**      | Hobby plan sufficient          |
+| **Backend Hosting**           | Render                               | **Free - $7** | Free tier or basic plan        |
+| **Database**                  | MongoDB Atlas                        | **Free**      | Shared cluster M0              |
+| **Notifications**             | Twilio (SMS) + SendGrid (Email)      | **$5-10**     | Pay-per-message                |
+| **NLP Processing**            | Open Source Models                   | **Free**      | Local processing               |
+
+**Total Estimated Cost: $30-50/month** for serving multiple clients
+
+### **Revenue Model Viability**
+
+- **Break-even**: 2-3 Starter plan customers
+- **Profitable Scale**: 10+ customers across all tiers
+- **Cost per Customer**: ~$3-5/month (shared infrastructure)
+- **Gross Margin**: 85-90% at scale
+
+### **Scaling Strategy**
+
+1. **Phase 1**: Free APIs + minimal Apify usage
+2. **Phase 2**: Increased Apify automation for premium features
+3. **Phase 3**: Custom enterprise integrations and white-label solutions
 
 ---
 

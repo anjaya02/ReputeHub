@@ -53,21 +53,24 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ---
 
-## 3.1 **Confirmed Platform Coverage (5 Platforms)**
+## 3.1 **Confirmed Platform Coverage (7 Platforms)**
 
-| Platform     | What We Monitor                    | Access Method                       | Cost Impact   |
-| ------------ | ---------------------------------- | ----------------------------------- | ------------- |
-| **Google**   | Reviews on Google Business         | ✅ **Official Google Business API** | 💰 **Free**   |
-| **Facebook** | Own page + public posts/hashtags   | ✅ **Graph API + Apify**            | 💰 **Hybrid** |
-| **LinkedIn** | Public hashtags & company mentions | ⚙️ **Apify (no public API)**        | 💸 **Paid**   |
-| **YouTube**  | Video comments & community posts   | ✅ **YouTube Data API**             | 💰 **Free**   |
-| **Reddit**   | Posts/comments mentioning brand    | ✅ **Reddit API**                   | 💰 **Free**   |
+| Platform      | What We Monitor                    | Access Method                | Cost Impact   | Risk Level |
+| ------------- | ---------------------------------- | ---------------------------- | ------------- | ---------- |
+| **Google**    | Reviews on Google Business         | ✅ **Official Places API**   | 💰 **Free**   | None       |
+| **Facebook**  | Own page + public posts/hashtags   | ✅ **Graph API + Apify**     | 💰 **Hybrid** | Low        |
+| **Instagram** | Comments, tags, hashtags           | ✅ **Graph API + Apify**     | 💰 **Hybrid** | Low        |
+| **LinkedIn**  | Public hashtags & company mentions | ⚙️ **Marketing API + Apify** | 💸 **Paid**   | Medium     |
+| **TikTok**    | Hashtags, mentions in captions     | ⚙️ **Apify Scrapers**        | 💸 **Paid**   | Low        |
+| **YouTube**   | Video comments & community posts   | ✅ **YouTube Data API**      | 💰 **Free**   | None       |
+| **Reddit**    | Posts/comments mentioning brand    | ✅ **Reddit API**            | 💰 **Free**   | None       |
 
-**Facebook Split Approach:**
+**Hybrid Data Collection Strategy:**
 
-- **Client's Own Facebook Page:** Free via Graph API (reviews, comments, posts)
-- **Public Brand Mentions:** Paid via Apify (hashtags, mentions in other users' posts)
-- **Result:** Up to 70-80% cost reduction compared to full Apify approach
+- **Official APIs (Primary):** Facebook/Instagram Graph APIs, Google Places, YouTube Data, Reddit API - all free within quotas
+- **Apify Automation (Secondary):** TikTok scrapers, LinkedIn public content, Facebook/Instagram public mentions where APIs are limited
+- **Cost Optimization:** 60-70% of data collected via free APIs, reducing overall operational costs
+- **Result:** Comprehensive 7-platform coverage at ~$30-40/month operational cost
 
 ---
 
@@ -396,60 +399,71 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ---
 
-## 7. **Technical Stack (Budget-Friendly SaaS)**
+## 7. **Technical Stack (Social Listening System)**
 
-| **Layer**           | **Tools & Frameworks**                              | **Notes**                                                                  |
-| ------------------- | --------------------------------------------------- | -------------------------------------------------------------------------- |
-| **Frontend**        | React (Next.js), Tailwind CSS                       | Responsive, modern UI                                                      |
-| **Backend**         | FastAPI (Python), REST + GraphQL                    | High performance, scalable                                                 |
-| **Database**        | MongoDB Atlas                                       | Flexible document storage for varied data                                  |
-| **Data Collection** | Official APIs + Apify Platform + Facebook Graph API | Hybrid approach: APIs + compliant automation + direct Facebook integration |
-| **ML/NLP**          | HuggingFace Transformers, BERTopic, Prophet         | Free multilingual models                                                   |
-| **AI Replies**      | Gemini / LLaMA (local)                              | Low-cost inference                                                         |
-| **Notifications**   | Twilio, SendGrid                                    | Pay-as-you-go                                                              |
-| **Hosting**         | Vercel + Railway                                    | Free tier for MVP                                                          |
-| **Deployment**      | Docker, GitHub Actions CI/CD                        | Automated builds                                                           |
+| **Layer**           | **Tools & Frameworks**               | **Notes**                                          |
+| ------------------- | ------------------------------------ | -------------------------------------------------- |
+| **Frontend**        | Next.js 14, React 18, Tailwind CSS   | Responsive, modern dashboard UI                    |
+| **Backend**         | FastAPI (Python), REST APIs          | High performance, async data collection            |
+| **Database**        | MongoDB Atlas (Free Tier)            | Flexible document storage for varied platform data |
+| **Data Collection** | Official APIs + Apify Platform       | 7-platform coverage with ethical scraping fallback |
+| **ML/NLP**          | HuggingFace Transformers, TextBlob   | Free multilingual sentiment analysis               |
+| **AI Processing**   | Open Source Models (BERT, XLM-R)     | Local inference, no API costs                      |
+| **Notifications**   | Twilio (SMS), SendGrid (Email)       | Real-time alerts, pay-as-you-go                    |
+| **Hosting**         | Vercel (Frontend) + Render (Backend) | Free tier deployment                               |
+| **Orchestration**   | Cron Jobs, Background Tasks          | Automated data collection scheduling               |
 
-💰 **Approx. Monthly Cost (MVP): $15–25** (reduced Apify costs through Facebook Graph API optimization)
+💰 **Estimated Monthly Cost: $30-40** (mostly Apify usage for platforms without free APIs)
 
 ---
 
-## 8. **Ethical Data Collection & Compliance**
+## 8. **Ethical Data Collection & Privacy Compliance**
 
-**Reputify's Hybrid Data Collection Model** operates under strict ethical guidelines to ensure responsible and compliant data gathering:
+**Reputify's Social Listening Model** follows strict ethical guidelines and only processes publicly available data:
 
 ### **🔐 Official API Sources (Primary - 100% Compliant)**
 
-- **Google Business Profile, YouTube, Reddit APIs:** Direct access through official channels with proper authentication and rate limiting.
-- **Facebook Graph API:** Direct access to client's own Facebook Page data (reviews, comments, posts) through OAuth authentication.
-- **Full legal compliance** with platform terms of service and data usage policies.
+- **Facebook & Instagram Graph APIs:** Client-authorized access to their own business accounts via OAuth
+- **Google Places API:** Public business reviews and ratings data
+- **YouTube Data API:** Public comments and video content
+- **Reddit API:** Public posts and comments in relevant subreddits
+- **LinkedIn Marketing API:** Connected company page data with proper authorization
 
-### **🤖 Apify Automation (Secondary - Controlled & Compliant)**
+### **🤖 Apify Automation (Secondary - Public Data Only)**
 
-- **Public Data Only:** Collects exclusively public posts, mentions, and hashtags—no private user information.
-- **Facebook Public Mentions:** Used only for brand mentions and hashtags outside the client's own page.
-- **LinkedIn Public Content:** Company page mentions and professional discussions.
-- **Regulated Platform:** Apify maintains compliance with GDPR, handles proxy management, and respects platform rate limits.
-- **Ethical Scraping Standards:** All data collection follows industry best practices for responsible automation.
-- **No Personal Data Storage:** Focus on business mentions and sentiment, not individual user profiles.
+- **TikTok:** Public hashtags, mentions in captions, and comments on public videos
+- **LinkedIn:** Public company mentions and professional discussions where API is limited
+- **Facebook/Instagram:** Public posts containing brand mentions (not accessible via Graph API)
+- **Ethical Standards:** All scraping targets only public, non-personal content
+- **Rate Limiting:** Respects platform guidelines and implements proper delays
 
-### **🛡️ Privacy & Security Measures**
+### **🛡️ Privacy & Security Framework**
 
-- **Data Minimization:** Only collect data directly relevant to business reputation monitoring.
-- **Secure Storage:** All data encrypted and stored with appropriate access controls in MongoDB Atlas.
-- **Transparent Operations:** Clear disclosure of data sources and collection methods to all users.
+- **Public Data Only:** No private messages, personal profiles, or restricted content
+- **No Personal Data Storage:** Focus on brand mentions and business-relevant content only
+- **GDPR Compliance:** Data minimization, user rights, and proper consent mechanisms
+- **Secure Infrastructure:** Encrypted storage, API key protection, and access controls
+- **Transparent Disclosure:** Clear communication about data sources and collection methods
 
-> **Reputify does not engage in unauthorized data scraping.** The platform uses a **hybrid data collection model**: Official APIs (Google Business, YouTube, Reddit, Facebook Graph API) for primary data sources, and **Apify** (a regulated data automation platform) only for public social content where official APIs are limited. Facebook data collection is optimized through **Graph API for client pages** (free, official) and **Apify for public mentions** (paid, compliant). Only public posts and comments are analyzed, and no personal or private user data is stored.
+### **📋 Operational Boundaries**
+
+1. **What We Collect:** Public mentions, reviews, hashtags, and comments related to client businesses
+2. **What We Don't Collect:** Private messages, personal user data, or restricted content
+3. **Data Retention:** Configurable retention periods with automatic purging
+4. **User Rights:** Data access, correction, and deletion capabilities
+5. **Audit Trail:** Complete logging of all data collection and processing activities
+
+> **Privacy-First Approach:** Reputify operates as a social listening platform that processes only publicly available business-related content. All data collection methods comply with platform terms of service, GDPR requirements, and industry best practices for ethical data use.
 
 ---
 
 ## 9. **SaaS Business Model**
 
-| **Plan**         | **Price (LKR)** | **Features**                                      | **Target Market**       | **Facebook Coverage** |
-| ---------------- | --------------- | ------------------------------------------------- | ----------------------- | --------------------- |
-| **Starter**      | 3,000/month     | 1 location, Sentiment, Alerts, Own Facebook Page  | Cafes, shops            | Graph API only        |
-| **Professional** | 9,000/month     | Aspect analysis, Public mentions, WhatsApp alerts | Restaurants, clinics    | Graph API + Apify     |
-| **Business**     | 24,000/month    | Predictive analytics, Reports, Priority support   | Hotel chains, retailers | Full coverage + extra |
+| **Plan**         | **Price (LKR)** | **Platform Coverage**                           | **Target Market**            | **Key Features**                 |
+| ---------------- | --------------- | ----------------------------------------------- | ---------------------------- | -------------------------------- |
+| **Starter**      | 3,000/month     | Google Reviews + Facebook/Instagram (own pages) | Small cafes, shops           | Basic monitoring, email alerts   |
+| **Professional** | 9,000/month     | + YouTube + Reddit + Public social mentions     | Growing restaurants, clinics | SMS alerts, sentiment analysis   |
+| **Business**     | 24,000/month    | All 7 platforms + TikTok + LinkedIn             | Hotel chains, agencies       | Full analytics, priority support |
 
 **Break-even:** 3 customers  
 **Scalable Goal:** 200 customers = LKR 1.5M/month
@@ -500,7 +514,7 @@ Planned for premium enterprise customers:
 **Focus for the first 4 months:**
 
 1.  **Hybrid Review Integration (v1.1)** – Official APIs (Google, YouTube, Reddit, Facebook Graph) + Apify automation setup with unified data pipeline and cost optimization.
-2.  **Basic Sentiment Classification (v1.2)** – multilingual model fine-tuned for social media and review content across all 5 platforms.
+2.  **Basic Sentiment Classification (v1.2)** – multilingual model fine-tuned for social media and review content across all 7 platforms.
 3.  **AI Response Generator (v1.3)** – LLaMA/Gemini prompt pipeline with approval layer for cross-platform responses.
 4.  **Dashboard + Alerts (v1.4, v1.5)** – real-time sentiment charts & WhatsApp/email alerts with Facebook hybrid data integration.
 5.  **Aspect-Based Analysis (v2.6)** – fine-tuned XLM-R model with aspect dictionary for multi-platform content including Facebook dual sources.
