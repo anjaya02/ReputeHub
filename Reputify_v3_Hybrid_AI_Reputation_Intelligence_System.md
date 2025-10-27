@@ -55,15 +55,15 @@ Small and medium businesses often face the same critical challenge — **they do
 
 ## 3.1 **Confirmed Platform Coverage (7 Platforms)**
 
-| Platform      | What We Monitor                    | Access Method                | Cost Impact   | Risk Level |
-| ------------- | ---------------------------------- | ---------------------------- | ------------- | ---------- |
-| **Google**    | Reviews on Google Business         | ✅ **Official Places API**   | 💰 **Free**   | None       |
-| **Facebook**  | Own page + public posts/hashtags   | ✅ **Graph API + Apify**     | 💰 **Hybrid** | Low        |
-| **Instagram** | Comments, tags, hashtags           | ✅ **Graph API + Apify**     | 💰 **Hybrid** | Low        |
-| **LinkedIn**  | Public hashtags & company mentions | ⚙️ **Marketing API + Apify** | 💸 **Paid**   | Medium     |
-| **TikTok**    | Hashtags, mentions in captions     | ⚙️ **Apify Scrapers**        | 💸 **Paid**   | Low        |
-| **YouTube**   | Video comments & community posts   | ✅ **YouTube Data API**      | 💰 **Free**   | None       |
-| **Reddit**    | Posts/comments mentioning brand    | ✅ **Reddit API**            | 💰 **Free**   | None       |
+| Platform      | What We Monitor                    | Access Method              | Cost Impact   | Risk Level |
+| ------------- | ---------------------------------- | -------------------------- | ------------- | ---------- |
+| **Google**    | Reviews on Google Business         | ✅ **Official Places API** | 💰 **Free**   | None       |
+| **Facebook**  | Own page + public posts/hashtags   | ✅ **Graph API + Apify**   | 💰 **Hybrid** | Low        |
+| **Instagram** | Comments, tags, hashtags           | ✅ **Graph API + Apify**   | 💰 **Hybrid** | Low        |
+| **LinkedIn**  | Public hashtags & company mentions | ⚙️ **Apify Scrapers Only** | 💸 **Paid**   | Medium     |
+| **TikTok**    | Hashtags, mentions in captions     | ⚙️ **Apify Scrapers**      | 💸 **Paid**   | Low        |
+| **YouTube**   | Video comments & community posts   | ✅ **YouTube Data API**    | 💰 **Free**   | None       |
+| **Reddit**    | Posts/comments mentioning brand    | ✅ **Reddit API**          | 💰 **Free**   | None       |
 
 **Hybrid Data Collection Strategy:**
 

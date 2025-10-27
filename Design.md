@@ -61,73 +61,185 @@ Reputify Portal
 
 ## 3️⃣ **Social Listening Data Flow Architecture**
 
-### Core Principle
+### 🎯 Core principle
 
 > Use **official APIs** where possible (safe + free), and use **Apify or scraping** only where APIs don't allow public search.
 
-### Level 0 (System Context)
+## ⚙️ PLATFORM-BY-PLATFORM BREAKDOWN
+
+### 🟦 **1. Facebook**
+
+**Goal:** Reviews, comments, tags, and name mentions.
+
+| Task                              | Access Method                              | Notes                                                                                |
+| --------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------ |
+| Page reviews & comments           | ✅ **Facebook Graph API**                  | Client connects their Page to Reputify → full access to posts, reviews, comments.    |
+| Tags & hashtags                   | ✅ **Graph API**                           | Use `/tagged` and `/feed?fields=message,hashtags`.                                   |
+| Keyword mentions (name appearing) | ⚠️ **Apify Facebook Public Pages Scraper** | Graph API can't do global text search. Scrape public posts containing "ABC PVT LTD". |
+
+---
+
+### 🟣 **2. Instagram**
+
+| Task                              | Access Method                               | Notes                                              |
+| --------------------------------- | ------------------------------------------- | -------------------------------------------------- |
+| Comments on client posts          | ✅ **Instagram Graph API**                  | After client connects IG Business account.         |
+| Tags & hashtags                   | ✅ **Graph API**                            | Track `@ABCpvtltd` tags and `#ABCpvtltd` hashtag.  |
+| Keyword mentions (no tag/hashtag) | ⚠️ **Apify Instagram Public Posts Scraper** | Crawl public captions using keyword "ABC PVT LTD". |
+
+---
+
+### 🔴 **3. Reddit**
+
+| Task                       | Access Method     | Notes                                                                      |
+| -------------------------- | ----------------- | -------------------------------------------------------------------------- |
+| Mentions of "ABC PVT LTD"  | ✅ **Reddit API** | Free endpoint `/search.json?q=ABC+Pvt+Ltd`.                                |
+| r/SriLanka focus           | ✅                | Filter by subreddit: `reddit.subreddit("srilanka").search("ABC Pvt Ltd")`. |
+| Sentiment / categorization | ✅ **NLP**        | Apply sentiment model to comment/post text.                                |
+
+---
+
+### 🔵 **4. LinkedIn**
+
+| Task                            | Access Method                 | Notes                                                       |
+| ------------------------------- | ----------------------------- | ----------------------------------------------------------- |
+| Comments on client's posts      | ⚠️ **Apify LinkedIn Scraper** | No accessible developer API for public search.              |
+| Tags & hashtags                 | ⚠️ **Apify LinkedIn Scraper** | Hashtag search and company mentions via scraping.           |
+| Keyword mentions (public posts) | ⚠️ **Apify LinkedIn Scraper** | No free keyword search API; scrape public company mentions. |
+
+---
+
+### ⚫ **5. TikTok**
+
+| Task                        | Access Method                        | Notes                                              |
+| --------------------------- | ------------------------------------ | -------------------------------------------------- |
+| Comments on client's videos | ⚙️ **Apify TikTok Comments Scraper** | For connected business accounts or public profile. |
+| Hashtags & mentions         | ⚙️ **Apify TikTok Hashtag Scraper**  | Use `#ABCpvtltd`.                                  |
+| Keyword mentions (no tag)   | ⚙️ **Apify TikTok Keyword Scraper**  | Search captions for "ABC PVT LTD".                 |
+
+---
+
+### 🔴 **6. YouTube**
+
+| Task                        | Access Method             | Notes                                                              |
+| --------------------------- | ------------------------- | ------------------------------------------------------------------ |
+| Comments on client's videos | ✅ **YouTube Data API**   | `/commentThreads?videoId=...`                                      |
+| Hashtags & mentions         | ✅ **YouTube Search API** | Search for `#ABCpvtltd` or `"ABC Pvt Ltd"` in titles/descriptions. |
+| Keyword mentions            | ✅ **YouTube Search API** | Keyword search across all public videos.                           |
+
+---
+
+### 🟢 **7. Google Reviews (Maps)**
+
+| Task                       | Access Method            | Notes                                                                       |
+| -------------------------- | ------------------------ | --------------------------------------------------------------------------- |
+| Business reviews & ratings | ✅ **Google Places API** | Use `place_id` from `Find Place` endpoint → `/place/details?fields=review`. |
+| Sentiment                  | ✅ NLP                   | Classify positive/neutral/negative.                                         |
+
+---
+
+## 🧱 BACKEND ARCHITECTURE (COST-EFFICIENT)
 
 ```
-[Client Users] ───► (Reputify Social Listening) ◄─── [Admin Users]
-       │                                         │
-       ▼                                         ▼
- ┌─────────────────────────────────────────────────────┐
- │  7-Platform Data Collection Layer                   │
- │  ✅ Official APIs: FB/IG, YouTube, Reddit, Google  │
- │  ⚙️  Apify Scrapers: TikTok, LinkedIn, Public      │
- └─────────────────┬───────────────────────────────────┘
-                   ▼
- [NLP Processing + MongoDB] → [Real-time Dashboard + Smart Alerts]
+          ┌────────────────────────┐
+          │ Platform Collectors    │
+          │  FB API / IG API       │
+          │  Reddit / YouTube API  │
+          │  Google Places API     │
+          │  Apify (TikTok, LI, FB search) │
+          └──────────┬─────────────┘
+                     ↓
+          ┌────────────────────────┐
+          │ Data Processor          │
+          │  - Deduplicate          │
+          │  - NLP Sentiment        │
+          │  - Entity Detection     │
+          └──────────┬─────────────┘
+                     ↓
+          ┌────────────────────────┐
+          │ MongoDB Atlas (Free)   │
+          └──────────┬─────────────┘
+                     ↓
+          ┌────────────────────────┐
+          │ Reputify Dashboard (React) │
+          │  - Mentions Table       │
+          │  - Charts / Trends      │
+          │  - Alerts               │
+          └────────────────────────┘
 ```
 
-### Level 1 (Detailed Architecture)
+---
 
-```
-[Business Owners]
-   │
-   ▼
-(Dashboard: Next.js + React)
-   │
-   ▼
-(API Gateway: FastAPI)
-   │
-   ├──► 🔵 Official APIs (Free)
-   │    ├── Facebook Graph API (OAuth)
-   │    ├── Instagram Graph API (Business)
-   │    ├── YouTube Data API
-   │    ├── Reddit API
-   │    └── Google Places API
-   │
-   ├──► ⚙️ Apify Platform (Paid)
-   │    ├── TikTok Scrapers
-   │    ├── LinkedIn Scrapers
-   │    └── Facebook Public Search
-   │
-   ├──► 🧠 NLP Pipeline
-   │    ├── Language Detection
-   │    ├── Sentiment Analysis
-   │    ├── Entity Extraction
-   │    └── Deduplication
-   │
-   ├──► 💾 MongoDB Atlas
-   │    ├── Mentions Collection
-   │    ├── Clients Collection
-   │    └── Analytics Cache
-   │
-   └──► 🔔 Alert System
-        ├── SMS (Twilio)
-        ├── Email (SendGrid)
-        └── WhatsApp API
-```
+## 💰 ESTIMATED COSTS (per month)
 
-### Operational Workflow
+| Component                                  | Tool                        | Cost                        |
+| ------------------------------------------ | --------------------------- | --------------------------- |
+| Facebook + Instagram                       | Meta Graph API              | **Free**                    |
+| Reddit                                     | Reddit API                  | **Free**                    |
+| YouTube                                    | YouTube Data API            | **Free**                    |
+| Google Reviews                             | Google Places API           | **Free**                    |
+| TikTok / LinkedIn / Facebook Public Search | Apify actors                | **$20–$30** (pay-as-you-go) |
+| Hosting (Backend + Dashboard)              | Render + Vercel             | **Free / <$5**              |
+| Database                                   | MongoDB Atlas (shared tier) | **Free**                    |
+| NLP sentiment (TextBlob / HuggingFace)     | Open source                 | **Free**                    |
 
-```
-Scheduler (Cron) → Data Collectors → Processing Pipeline → Storage → Dashboard Updates
-     ↓                    ↓                ↓              ↓            ↓
-Every 15min-4h     API Calls +      Language +      MongoDB     Real-time
-(by platform)     Apify Runs     Sentiment NLP    Documents      Charts
-```
+➡️ **Total:** ~$30–40/month for multiple clients.
+
+---
+
+## ⚙️ OPERATIONAL LOGIC
+
+1. **Client connects** their Facebook & Instagram business accounts to Reputify (OAuth).
+2. **Scheduler (cron)** runs every few hours:
+
+   - Calls Meta APIs for new comments/reviews.
+   - Calls YouTube & Reddit APIs for brand keyword.
+   - Triggers Apify scrapers for TikTok/LinkedIn searches.
+   - Pulls Google Reviews.
+
+3. **Processor** cleans, deduplicates, and runs sentiment analysis.
+4. **Data stored** in MongoDB with:
+
+   - Platform
+   - Mention type (comment, hashtag, review, etc.)
+   - Sentiment
+   - Source link + timestamp
+
+5. **Frontend dashboard** shows:
+
+   - Total mentions per platform
+   - Positive vs negative trend
+   - Direct links to original posts/comments
+
+---
+
+## 🔔 OPTIONAL IMPROVEMENTS
+
+- Email or Slack alerts for new negative mentions
+- Word cloud of most frequent keywords
+- Multi-client filtering (each business sees only its data)
+- AI-based "issue detection" (e.g., spikes in negative sentiment)
+
+---
+
+## ✅ SUMMARY TABLE
+
+| Platform       | Official API | Extra Scraping Needed      | Cost         | Risk   |
+| -------------- | ------------ | -------------------------- | ------------ | ------ |
+| Facebook       | ✅           | ⚙️ Yes (for public search) | Free + Apify | Low    |
+| Instagram      | ✅           | ⚙️ Yes                     | Free + Apify | Low    |
+| Reddit         | ✅           | ❌                         | Free         | None   |
+| LinkedIn       | ❌           | ✅ Apify only              | Apify        | Medium |
+| TikTok         | ❌           | ✅ Apify                   | Pay per use  | Low    |
+| YouTube        | ✅           | ❌                         | Free         | None   |
+| Google Reviews | ✅           | ❌                         | Free         | None   |
+
+---
+
+### 🔒 Privacy Note
+
+Everything here relies on **publicly available data** or **explicit business integrations**.
+No scraping of private user data, DMs, or personal profiles.
 
 ---
 
@@ -468,6 +580,8 @@ The dashboard integrates AI Bot outputs into real-time widgets such as **Sentime
   - **Reddit** → [Connected ✅] / [Connect] (Official API - Free)
   - **Facebook Page** → [Connected ✅] / [Connect Facebook Page] (Graph API - Free)
   - **Facebook Public Mentions** → [Connected ✅] / [Connect Public Tracking] (Apify - Professional Plan)
+  - **Instagram** → [Connected ✅] / [Connect] (Graph API - Free)
+  - **TikTok** → [Connected ✅] / [Connect] (Apify - Paid)
   - **LinkedIn** → [Connected ✅] / [Connect] (Apify - Paid)
 
 - Button: "Add Integration"
