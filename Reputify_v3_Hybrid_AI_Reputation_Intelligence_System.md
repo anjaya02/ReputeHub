@@ -32,7 +32,7 @@ Small and medium businesses often face the same critical challenge — **they do
 
 **🔍 Listen → 🧠 Analyze → 🤖 Engage → 📈 Improve**
 
-- **👂 Listen:** Gather all reviews and mentions across **5 key platforms** (Google Business, Facebook, LinkedIn, YouTube, Reddit) using **official APIs** and **cost-optimized automation** through a hybrid data collection model.
+- **👂 Listen:** Gather all reviews and mentions across **7 key platforms** (Google Business, Facebook, Instagram, LinkedIn, YouTube, Reddit, TikTok) using **official APIs** and **cost-optimized automation** through a hybrid data collection model.
 - **📊 Analyze:** Use NLP & ML to find patterns, emotions, and trends across all collected data with platform-specific insights.
 - **💬 Engage:** Suggest human-approved AI responses in local languages with platform-appropriate tone and formatting.
 - **🚀 Improve:** Predict rating trends and highlight issues to prevent crises across all monitored platforms.
@@ -463,7 +463,7 @@ Small and medium businesses often face the same critical challenge — **they do
 | ---------------- | --------------- | ----------------------------------------------- | ---------------------------- | -------------------------------- |
 | **Starter**      | 3,000/month     | Google Reviews + Facebook/Instagram (own pages) | Small cafes, shops           | Basic monitoring, email alerts   |
 | **Professional** | 9,000/month     | + YouTube + Reddit + Public social mentions     | Growing restaurants, clinics | SMS alerts, sentiment analysis   |
-| **Business**     | 24,000/month    | All 7 platforms + TikTok + LinkedIn             | Hotel chains, agencies       | Full analytics, priority support |
+| **Business**     | 24,000/month    | All 7 platforms (complete coverage)             | Hotel chains, agencies       | Full analytics, priority support |
 
 **Break-even:** 3 customers  
 **Scalable Goal:** 200 customers = LKR 1.5M/month

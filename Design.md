@@ -42,18 +42,18 @@ Reputify Portal
 
 ## 2️⃣ **Wireframe Specification Summary**
 
-| Page                   | Purpose                            | Key UI Components                                            |
-| ---------------------- | ---------------------------------- | ------------------------------------------------------------ |
-| **Landing Page**       | Introduce Reputify to new visitors | Navbar, Hero Section, Features, Pricing, CTA, Footer         |
-| **Login / Signup**     | Authenticate user                  | Form fields, "Forgot password", Sign-up link                 |
-| **Dashboard**          | Summarize business reputation      | KPI cards, Sentiment Graph, Mentions Summary, Alerts         |
-| **Mentions Feed**      | List all fetched mentions          | Filter bar, search box, mention cards, sentiment tags        |
-| **Mention Details**    | View one mention in full           | NLP results, AI reply box, Similar mentions list             |
-| **Alerts Page**        | Show urgent negative mentions      | Critical cards, alert score, "Resolve" button                |
-| **Reports & Insights** | View and export analytics          | Charts, sentiment trends, export buttons                     |
-| **Integrations**       | Connect APIs                       | Platform cards (FB, LinkedIn, Reddit, etc.), connect buttons |
-| **Settings**           | Manage profile + notifications     | Account info, password change, language, alert toggle        |
-| **Admin Dashboard**    | Manage all clients                 | Client table, usage stats, billing tab, system logs          |
+| Page                   | Purpose                            | Key UI Components                                                               |
+| ---------------------- | ---------------------------------- | ------------------------------------------------------------------------------- |
+| **Landing Page**       | Introduce Reputify to new visitors | Navbar, Hero Section, Features, Pricing, CTA, Footer                            |
+| **Login / Signup**     | Authenticate user                  | Form fields, "Forgot password", Sign-up link                                    |
+| **Dashboard**          | Summarize business reputation      | KPI cards, Sentiment Graph, Mentions Summary, Alerts                            |
+| **Mentions Feed**      | List all fetched mentions          | Filter bar, search box, mention cards, sentiment tags                           |
+| **Mention Details**    | View one mention in full           | NLP results, AI reply box, Similar mentions list                                |
+| **Alerts Page**        | Show urgent negative mentions      | Critical cards, alert score, "Resolve" button                                   |
+| **Reports & Insights** | View and export analytics          | Charts, sentiment trends, export buttons                                        |
+| **Integrations**       | Connect APIs                       | Platform cards (FB, Instagram, TikTok, LinkedIn, Reddit, etc.), connect buttons |
+| **Settings**           | Manage profile + notifications     | Account info, password change, language, alert toggle                           |
+| **Admin Dashboard**    | Manage all clients                 | Client table, usage stats, billing tab, system logs                             |
 
 > "Each page will be designed in Figma wireframes following this structure. The layout ensures usability, data clarity, and scalability for future modules."
 
@@ -1084,7 +1084,7 @@ The structure provides an affordable entry point for small businesses while scal
 | ---------------- | ------------------- | -------------------------------- | ------------------------------------------------------------------------ |
 | **Starter**      | LKR 3,000 / USD 10  | Small cafés, salons, freelancers | Google Reviews + Facebook/Instagram (own pages) - Basic social listening |
 | **Professional** | LKR 9,000 / USD 30  | Growing SMEs                     | + YouTube + Reddit + Public mentions - Comprehensive social monitoring   |
-| **Business**     | LKR 24,000 / USD 75 | Agencies / multi-branch brands   | All 7 platforms + TikTok + LinkedIn - Complete social intelligence       |
+| **Business**     | LKR 24,000 / USD 75 | Agencies / multi-branch brands   | All 7 platforms (complete coverage) - Complete social intelligence       |
 
 ---
 
@@ -1092,7 +1092,7 @@ The structure provides an affordable entry point for small businesses while scal
 
 | Feature                    | **Starter**                  | **Professional**                     | **Business**                                |
 | -------------------------- | ---------------------------- | ------------------------------------ | ------------------------------------------- |
-| **Platforms Covered**      | Google Reviews + Facebook/IG | + YouTube + Reddit + Public mentions | All 7 platforms (+ TikTok + LinkedIn)       |
+| **Platforms Covered**      | Google Reviews + Facebook/IG | + YouTube + Reddit + Public mentions | All 7 platforms (complete coverage)         |
 | **Data Collection Method** | Official APIs only           | APIs + Limited Apify                 | APIs + Full Apify scraping                  |
 | **Mention Types**          | Reviews + Own page comments  | + Public hashtags & brand mentions   | + TikTok videos + LinkedIn discussions      |
 | **Sentiment Analysis**     | ✅ English only              | ✅ English + Sinhala/Tamil           | ✅ Multilingual + confidence scores         |
