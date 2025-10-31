@@ -19,22 +19,22 @@
 
 ## 🛠️ Recommended Tech Stack
 
-| Layer                           | Technology                                                     | Purpose                                              |
-| ------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------- |
-| **Frontend**                    | **Next.js (React + TypeScript)**                               | Dashboard & marketing website (SSR + SPA)            |
-| **Styling**                     | **Tailwind CSS**                                               | Responsive UI and dark theme                         |
-| **Backend**                     | **FastAPI (Python)**                                           | Core API server, data processing, JWT authentication |
-| **Database**                    | **MongoDB Atlas**                                              | Stores businesses, mentions, AI data, alerts         |
+| Layer                           | Technology                                                     | Purpose                                                    |
+| ------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Frontend**                    | **Next.js (React + TypeScript)**                               | Dashboard & marketing website (SSR + SPA)                  |
+| **Styling**                     | **Tailwind CSS**                                               | Responsive UI and dark theme                               |
+| **Backend**                     | **FastAPI (Python)**                                           | Core API server, data processing, JWT authentication       |
+| **Database**                    | **MongoDB Atlas**                                              | Stores businesses, mentions, AI data, alerts               |
 | **Search / Index**              | **OpenSearch / Elasticsearch**                                 | Fast full-text & semantic search, deduplication, analytics |
-| **Authentication**              | **JWT + bcrypt**                                               | Secure login and role-based access                   |
-| **AI / NLP**                    | **OpenAI API + Hugging Face models**                           | Sentiment, intent, AI reply suggestions              |
-| **Scraping / Automation**       | **Apify Actors**                                               | LinkedIn & Facebook mentions                         |
-| **Official APIs**               | **Google Business, YouTube Data, Reddit API, Facebook Graph**  | Structured review data                               |
-| **Scheduler / Background Jobs** | **Celery + Redis (or Apify scheduling)**                       | 8-hour automatic data collection                     |
-| **Notifications**               | **Twilio / SMTP**                                              | Email, SMS, WhatsApp alerts                          |
-| **Hosting**                     | **Frontend:** Vercel **Backend:** Render **DB:** MongoDB Atlas | Cloud-native deployment                              |
-| **CDN & Security**              | **Cloudflare**                                                 | HTTPS, caching, domain protection                    |
-| **Version Control / CI/CD**     | **GitHub**                                                     | Source control, automatic deployment                 |
+| **Authentication**              | **JWT + bcrypt**                                               | Secure login and role-based access                         |
+| **AI / NLP**                    | **OpenAI API + Hugging Face models**                           | Sentiment, intent, AI reply suggestions                    |
+| **Scraping / Automation**       | **Apify Actors**                                               | LinkedIn & Facebook mentions                               |
+| **Official APIs**               | **Google Business, YouTube Data, Reddit API, Facebook Graph**  | Structured review data                                     |
+| **Scheduler / Background Jobs** | **Celery + Redis (or Apify scheduling)**                       | 8-hour automatic data collection                           |
+| **Notifications**               | **Twilio / SMTP**                                              | Email, SMS, WhatsApp alerts                                |
+| **Hosting**                     | **Frontend:** Vercel **Backend:** Render **DB:** MongoDB Atlas | Cloud-native deployment                                    |
+| **CDN & Security**              | **Cloudflare**                                                 | HTTPS, caching, domain protection                          |
+| **Version Control / CI/CD**     | **GitHub**                                                     | Source control, automatic deployment                       |
 
 Note: We use Next.js (not Vite) for the frontend and FastAPI (Python) for the backend as the canonical stack for this project.
 
