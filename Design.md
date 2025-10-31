@@ -268,30 +268,99 @@ No scraping of private user data, DMs, or personal profiles.
 
 Reputify uses **MongoDB Atlas** for its flexible document-based data model, which is ideal for storing multilingual NLP data and varying mention structures from different platforms.
 
-````json
+```json
 {
   "business": {
     "_id": "ObjectId",
     "name": "Cafe Aroma",
+    "email": "owner@cafe.lk",
+    "plan": "Professional",
+    "platforms": {
+      "google_business": { 
+        "connected": true, 
+        "api_key": "encrypted_key" 
+      },
+      "youtube": { 
+        "connected": true, 
+        "api_key": "encrypted_key" 
+      },
+      "reddit": { 
+        "connected": true, 
+        "api_key": "encrypted_key" 
+      },
+      "facebook_page": {
+        "connected": true,
+        "page_id": "123",
+        "access_token": "encrypted_token",
+        "method": "graph_api"
+      },
+      "facebook_public": {
+        "connected": true,
+        "apify_actor_id": "actor_123",
+        "method": "apify"
+      },
+      "linkedin": {
+        "connected": false,
+        "apify_actor_id": null,
+        "method": "apify"
+      }
+    },
+    "created_at": "2025-10-19T10:00Z",
+    "subscription_status": "active"
+  },
+  "mention": {
+    "_id": "ObjectId",
+    "business_id": "ObjectId",
+    "platform": "facebook",
+    "data_source": "graph_api",
+    "text": "The service was slow but food was good",
+    "sentiment": { 
+      "label": "mixed", 
+      "score": 0.72 
+    },
+    "intent": "complaint",
+    "aspect": ["service", "food"],
+    "timestamp": "2025-10-19T12:00Z",
+    "status": "new",
+    "original_url": "https://facebook.com/post/123",
+    "cost_tier": "free"
+  },
+  "alert": {
+    "_id": "ObjectId",
+    "mention_id": "ObjectId",
+    "business_id": "ObjectId",
+    "priority": "high",
+    "delivery": ["whatsapp", "email"],
+    "resolved": false,
+    "created_at": "2025-10-19T12:05Z"
+  }
+}
+```
 
-### 🔎 Search architecture (MongoDB ↔ OpenSearch)
+**Notes:**
+- `data_source`: Indicates whether the mention came from "graph_api" (official API) or "apify" (public scraping)
+- `cost_tier`: Tracks whether the data source is "free" or "paid" for cost management
+
+---
+
+## 🔎 **Search Architecture (MongoDB ↔ OpenSearch)**
 
 To provide fast, relevant full-text and semantic search over mentions (and to support deduplication and "similar mentions"), we keep a near-real-time OpenSearch index in sync with the canonical MongoDB store.
 
-Sync strategy (recommended):
+### Sync Strategy (Recommended)
 
-1. Ingest: all incoming mentions are written to MongoDB as the canonical source of truth.
-2. Publish: immediately after insert/update, publish a change event (either via MongoDB Change Streams or push a message to Redis/Celery queue).
-3. Index writer: a lightweight indexer worker (Python service) consumes change events, transforms the MongoDB document into the OpenSearch document shape, and upserts into OpenSearch.
-4. Consistency: indexer supports idempotent upserts, handles deletes, and retries with exponential backoff. Periodic full reindex jobs reconcile any missed events.
+1. **Ingest**: All incoming mentions are written to MongoDB as the canonical source of truth
+2. **Publish**: Immediately after insert/update, publish a change event (either via MongoDB Change Streams or push a message to Redis/Celery queue)
+3. **Index writer**: A lightweight indexer worker (Python service) consumes change events, transforms the MongoDB document into the OpenSearch document shape, and upserts into OpenSearch
+4. **Consistency**: Indexer supports idempotent upserts, handles deletes, and retries with exponential backoff. Periodic full reindex jobs reconcile any missed events
 
-Indexing flow (example):
+### Indexing Flow (Example)
 
-- Client / Apify / API → FastAPI ingest endpoint → store mention in `mentions` collection (MongoDB).
-- FastAPI publishes a `mention.created` event to Redis / Celery or relies on MongoDB Change Stream.
-- Indexer service picks up event → computes embeddings (optional) → prepares index payload → upsert into OpenSearch index `mentions_v1`.
+- Client / Apify / API → FastAPI ingest endpoint → store mention in `mentions` collection (MongoDB)
+- FastAPI publishes a `mention.created` event to Redis / Celery or relies on MongoDB Change Stream
+- Indexer service picks up event → computes embeddings (optional) → prepares index payload → upsert into OpenSearch index `mentions_v1`
 
-Example OpenSearch index mapping (simplified):
+### Example OpenSearch Index Mapping
 
 ```json
 {
@@ -310,66 +379,14 @@ Example OpenSearch index mapping (simplified):
     }
   }
 }
-````
-
-Notes:
-
-- Use language-specific analysers or custom analyzers for Sinhala/Tamil if higher recall is required. OpenSearch supports custom analyzers and token filters.
-- For semantic search, precompute embeddings (sentence-transformers) in the indexer and store them in `embedding` (dense_vector) for kNN queries.
-- Keep index mappings versioned (e.g., `mentions_v1`, `mentions_v2`) to simplify migrations and reindexing.
-- Reconciliation: run daily or weekly reindex job that scans MongoDB for differences and repairs the OpenSearch index if needed.
-  "email": "owner@cafe.lk",
-  "plan": "Professional",
-  "platforms": {
-  "google_business": { "connected": true, "api_key": "encrypted_key" },
-  "youtube": { "connected": true, "api_key": "encrypted_key" },
-  "reddit": { "connected": true, "api_key": "encrypted_key" },
-  "facebook_page": {
-  "connected": true,
-  "page_id": "123",
-  "access_token": "encrypted_token",
-  "method": "graph_api"
-  },
-  "facebook_public": {
-  "connected": true,
-  "apify_actor_id": "actor_123",
-  "method": "apify"
-  },
-  "linkedin": {
-  "connected": false,
-  "apify_actor_id": null,
-  "method": "apify"
-  }
-  },
-  "created_at": "2025-10-19T10:00Z",
-  "subscription_status": "active"
-  },
-  "mention": {
-  "\_id": "ObjectId",
-  "business_id": "ObjectId",
-  "platform": "facebook",
-  "data_source": "graph_api", // or "apify" for public mentions
-  "text": "The service was slow but food was good",
-  "sentiment": { "label": "mixed", "score": 0.72 },
-  "intent": "complaint",
-  "aspect": ["service", "food"],
-  "timestamp": "2025-10-19T12:00Z",
-  "status": "new",
-  "original_url": "https://facebook.com/post/123",
-  "cost_tier": "free" // or "paid" for Apify sources
-  },
-  "alert": {
-  "\_id": "ObjectId",
-  "mention_id": "ObjectId",
-  "business_id": "ObjectId",
-  "priority": "high",
-  "delivery": ["whatsapp", "email"],
-  "resolved": false,
-  "created_at": "2025-10-19T12:05Z"
-  }
-  }
-
 ```
+
+### Implementation Notes
+
+- **Language-specific analyzers**: Use custom analyzers for Sinhala/Tamil if higher recall is required. OpenSearch supports custom analyzers and token filters
+- **Semantic search**: Precompute embeddings (sentence-transformers) in the indexer and store them in `embedding` (dense_vector) for kNN queries
+- **Index versioning**: Keep index mappings versioned (e.g., `mentions_v1`, `mentions_v2`) to simplify migrations and reindexing
+- **Reconciliation**: Run daily or weekly reindex job that scans MongoDB for differences and repairs the OpenSearch index if needed
 
 ---
 
