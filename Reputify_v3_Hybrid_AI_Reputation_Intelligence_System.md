@@ -84,6 +84,7 @@ Small and medium businesses often face the same critical challenge — **they do
 | **Styling**                     | **Tailwind CSS**                                               | Responsive UI and dark theme                         |
 | **Backend**                     | **FastAPI (Python)**                                           | Core API server, data processing, JWT authentication |
 | **Database**                    | **MongoDB Atlas**                                              | Stores businesses, mentions, AI data, alerts         |
+| **Search / Index**              | **OpenSearch / Elasticsearch**                                 | Fast full-text & semantic search, deduplication, analytics |
 | **Authentication**              | **JWT + bcrypt**                                               | Secure login and role-based access                   |
 | **AI / NLP**                    | **OpenAI API + Hugging Face models**                           | Sentiment, intent, AI reply suggestions              |
 | **Scraping / Automation**       | **Apify Actors**                                               | LinkedIn & Facebook mentions                         |
