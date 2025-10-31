@@ -268,61 +268,107 @@ No scraping of private user data, DMs, or personal profiles.
 
 Reputify uses **MongoDB Atlas** for its flexible document-based data model, which is ideal for storing multilingual NLP data and varying mention structures from different platforms.
 
-```json
+````json
 {
   "business": {
     "_id": "ObjectId",
     "name": "Cafe Aroma",
-    "email": "owner@cafe.lk",
-    "plan": "Professional",
-    "platforms": {
-      "google_business": { "connected": true, "api_key": "encrypted_key" },
-      "youtube": { "connected": true, "api_key": "encrypted_key" },
-      "reddit": { "connected": true, "api_key": "encrypted_key" },
-      "facebook_page": {
-        "connected": true,
-        "page_id": "123",
-        "access_token": "encrypted_token",
-        "method": "graph_api"
-      },
-      "facebook_public": {
-        "connected": true,
-        "apify_actor_id": "actor_123",
-        "method": "apify"
-      },
-      "linkedin": {
-        "connected": false,
-        "apify_actor_id": null,
-        "method": "apify"
-      }
-    },
-    "created_at": "2025-10-19T10:00Z",
-    "subscription_status": "active"
-  },
-  "mention": {
-    "_id": "ObjectId",
-    "business_id": "ObjectId",
-    "platform": "facebook",
-    "data_source": "graph_api", // or "apify" for public mentions
-    "text": "The service was slow but food was good",
-    "sentiment": { "label": "mixed", "score": 0.72 },
-    "intent": "complaint",
-    "aspect": ["service", "food"],
-    "timestamp": "2025-10-19T12:00Z",
-    "status": "new",
-    "original_url": "https://facebook.com/post/123",
-    "cost_tier": "free" // or "paid" for Apify sources
-  },
-  "alert": {
-    "_id": "ObjectId",
-    "mention_id": "ObjectId",
-    "business_id": "ObjectId",
-    "priority": "high",
-    "delivery": ["whatsapp", "email"],
-    "resolved": false,
-    "created_at": "2025-10-19T12:05Z"
+
+### 🔎 Search architecture (MongoDB ↔ OpenSearch)
+
+To provide fast, relevant full-text and semantic search over mentions (and to support deduplication and "similar mentions"), we keep a near-real-time OpenSearch index in sync with the canonical MongoDB store.
+
+Sync strategy (recommended):
+
+1. Ingest: all incoming mentions are written to MongoDB as the canonical source of truth.
+2. Publish: immediately after insert/update, publish a change event (either via MongoDB Change Streams or push a message to Redis/Celery queue).
+3. Index writer: a lightweight indexer worker (Python service) consumes change events, transforms the MongoDB document into the OpenSearch document shape, and upserts into OpenSearch.
+4. Consistency: indexer supports idempotent upserts, handles deletes, and retries with exponential backoff. Periodic full reindex jobs reconcile any missed events.
+
+Indexing flow (example):
+
+- Client / Apify / API → FastAPI ingest endpoint → store mention in `mentions` collection (MongoDB).
+- FastAPI publishes a `mention.created` event to Redis / Celery or relies on MongoDB Change Stream.
+- Indexer service picks up event → computes embeddings (optional) → prepares index payload → upsert into OpenSearch index `mentions_v1`.
+
+Example OpenSearch index mapping (simplified):
+
+```json
+{
+  "mappings": {
+    "properties": {
+      "mention_id":       { "type": "keyword" },
+      "business_id":      { "type": "keyword" },
+      "platform":         { "type": "keyword" },
+      "text":             { "type": "text", "analyzer": "standard" },
+      "lang":             { "type": "keyword" },
+      "sentiment_label":  { "type": "keyword" },
+      "sentiment_score":  { "type": "float" },
+      "timestamp":        { "type": "date" },
+      "original_url":     { "type": "keyword" },
+      "embedding":        { "type": "dense_vector", "dims": 1536 }
+    }
   }
 }
+````
+
+Notes:
+
+- Use language-specific analysers or custom analyzers for Sinhala/Tamil if higher recall is required. OpenSearch supports custom analyzers and token filters.
+- For semantic search, precompute embeddings (sentence-transformers) in the indexer and store them in `embedding` (dense_vector) for kNN queries.
+- Keep index mappings versioned (e.g., `mentions_v1`, `mentions_v2`) to simplify migrations and reindexing.
+- Reconciliation: run daily or weekly reindex job that scans MongoDB for differences and repairs the OpenSearch index if needed.
+  "email": "owner@cafe.lk",
+  "plan": "Professional",
+  "platforms": {
+  "google_business": { "connected": true, "api_key": "encrypted_key" },
+  "youtube": { "connected": true, "api_key": "encrypted_key" },
+  "reddit": { "connected": true, "api_key": "encrypted_key" },
+  "facebook_page": {
+  "connected": true,
+  "page_id": "123",
+  "access_token": "encrypted_token",
+  "method": "graph_api"
+  },
+  "facebook_public": {
+  "connected": true,
+  "apify_actor_id": "actor_123",
+  "method": "apify"
+  },
+  "linkedin": {
+  "connected": false,
+  "apify_actor_id": null,
+  "method": "apify"
+  }
+  },
+  "created_at": "2025-10-19T10:00Z",
+  "subscription_status": "active"
+  },
+  "mention": {
+  "\_id": "ObjectId",
+  "business_id": "ObjectId",
+  "platform": "facebook",
+  "data_source": "graph_api", // or "apify" for public mentions
+  "text": "The service was slow but food was good",
+  "sentiment": { "label": "mixed", "score": 0.72 },
+  "intent": "complaint",
+  "aspect": ["service", "food"],
+  "timestamp": "2025-10-19T12:00Z",
+  "status": "new",
+  "original_url": "https://facebook.com/post/123",
+  "cost_tier": "free" // or "paid" for Apify sources
+  },
+  "alert": {
+  "\_id": "ObjectId",
+  "mention_id": "ObjectId",
+  "business_id": "ObjectId",
+  "priority": "high",
+  "delivery": ["whatsapp", "email"],
+  "resolved": false,
+  "created_at": "2025-10-19T12:05Z"
+  }
+  }
+
 ```
 
 ---
@@ -330,6 +376,7 @@ Reputify uses **MongoDB Atlas** for its flexible document-based data model, whic
 ## 5️⃣ **Sequence Diagram (Data Flow Timeline)**
 
 ```
+
 Client → Dashboard → Fetches mentions via FastAPI → Queries MongoDB
 FastAPI → Official APIs (Google, YouTube, Reddit, Facebook Graph) → Collects own page data
 FastAPI → Apify → Collects public hashtags & mentions (LinkedIn, Facebook Public)
@@ -338,7 +385,8 @@ FastAPI → NLP Engine → Analyzes sentiment & intent
 NLP → MongoDB → Saves processed data with source attribution
 MongoDB → Dashboard → Updates charts & alerts
 Dashboard → Twilio → Sends notification to user
-```
+
+````
 
 > "Sequence flow representing hybrid data collection (Official APIs + Apify), AI analysis, and alert delivery with cost optimization."
 
@@ -867,7 +915,7 @@ JWT payload example:
   "role": "client",
   "exp": 1739942000
 }
-```
+````
 
 #### **Key Features:**
 

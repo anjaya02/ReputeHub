@@ -72,6 +72,36 @@ Small and medium businesses often face the same critical challenge — **they do
 - **Cost Optimization:** 60-70% of data collected via free APIs, reducing overall operational costs
 - **Result:** Comprehensive 7-platform coverage at ~$30-40/month operational cost
 
+### 🔎 Search architecture (MongoDB ↔ OpenSearch)
+
+We maintain a near-real-time OpenSearch index alongside MongoDB to enable fast full-text search, semantic similarity, and deduplication across mentions.
+
+Sync pattern (short):
+
+1. Mention ingested → save to MongoDB (canonical store).
+2. Emit change event (MongoDB Change Streams or push to Redis/Celery queue).
+3. Indexer service consumes event, transforms the document, and upserts into OpenSearch.
+4. Periodic reindex job reconciles state and repairs missed updates.
+
+Minimal index mapping example (OpenSearch):
+
+```json
+{
+  "mappings": {
+    "properties": {
+      "mention_id": { "type": "keyword" },
+      "text": { "type": "text", "analyzer": "standard" },
+      "platform": { "type": "keyword" },
+      "timestamp": { "type": "date" },
+      "sentiment": { "type": "keyword" },
+      "embedding": { "type": "dense_vector", "dims": 1536 }
+    }
+  }
+}
+```
+
+This architecture allows fast user-facing search and similarity queries while MongoDB remains the source of truth for business data and processing.
+
 ---
 
 ## 4. **System Overview**
