@@ -4,7 +4,7 @@
 **Purpose:** Build a multilingual, AI-powered SaaS platform for managing, analyzing, and improving business reputation — safely and affordably.  
 **Focus:** Real-time insights, smart analytics, and human-centered AI engagement using a **hybrid data collection model** combining both **official APIs** and **third-party automation platforms** (Apify) for comprehensive coverage.
 
-> **📋 Document Scope**: This document focuses on **business features, AI capabilities, pricing models, and product strategy**. For complete technical architecture, API design, authentication flows, and deployment specifications, refer to `reputify_design.md`.
+> **📋 Document Scope**: This document focuses on **business features, AI capabilities, pricing models, and product strategy**. For complete technical architecture, API design, authentication flows, and deployment specifications, refer to `Technical_Architecture.md`.
 
 ---
 
@@ -112,7 +112,7 @@ This enhanced architecture allows fast user-facing search and similarity queries
 
 ### 🛠️ Tech Stack Summary
 
-> **📋 Complete Details**: See `reputify_design.md` for full tech stack specifications, API design, and deployment architecture.
+> **📋 Complete Details**: See `Technical_Architecture.md` for full tech stack specifications, API design, and deployment architecture.
 
 **Core Technologies**: Next.js + FastAPI + MongoDB Atlas + OpenAI + Apify automation  
 **Cost Structure**: ~$40-65/month operational cost for comprehensive 7-platform monitoring
@@ -126,7 +126,7 @@ This enhanced architecture allows fast user-facing search and similarity queries
 
 ## 4. **Technical Architecture Summary**
 
-> **📋 Note**: For complete technical architecture details including system design, authentication flows, API endpoints, and deployment specifications, refer to `reputify_design.md`.
+> **📋 Note**: For complete technical architecture details including system design, authentication flows, API endpoints, and deployment specifications, refer to `Technical_Architecture.md`.
 
 **Key Technical Highlights:**
 

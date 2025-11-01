@@ -1,6 +1,6 @@
 # 🏗️ Reputify - Social Listening System Design Documentation
 
-> **📋 Document Scope**: This document provides **complete technical architecture, system design, API specifications, authentication flows, and deployment details**. For business features, AI capabilities, and pricing strategy, refer to `Reputify_v3_Hybrid_AI_Reputation_Intelligence_System.md`.
+> **📋 Document Scope**: This document provides **complete technical architecture, system design, API specifications, authentication flows, and deployment details**. For business features, AI capabilities, and pricing strategy, refer to `Business_Features_Overview.md`.
 
 ## 1️⃣ **System Planning Overview**
 
