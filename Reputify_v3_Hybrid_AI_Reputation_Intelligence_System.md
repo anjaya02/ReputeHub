@@ -4,6 +4,8 @@
 **Purpose:** Build a multilingual, AI-powered SaaS platform for managing, analyzing, and improving business reputation — safely and affordably.  
 **Focus:** Real-time insights, smart analytics, and human-centered AI engagement using a **hybrid data collection model** combining both **official APIs** and **third-party automation platforms** (Apify) for comprehensive coverage.
 
+> **📋 Document Scope**: This document focuses on **business features, AI capabilities, pricing models, and product strategy**. For complete technical architecture, API design, authentication flows, and deployment specifications, refer to `reputify_design.md`.
+
 ---
 
 ## 1. **The Problem: Digital Reputation Blind Spots**
@@ -47,7 +49,7 @@ Small and medium businesses often face the same critical challenge — **they do
 | **v2 – Intelligence** | Smart Analytics           | Aspect-based insights, review plausibility analysis, predictive analysis           |
 | **v3 – Engagement**   | Social Awareness & Ethics | Intent detection, AI engagement (human-approved), issue extraction, feedback loops |
 
-🛡️ **Enhanced Data Collection:** _Implemented hybrid approach using official APIs + Apify automation for public social content_ (replaced high-risk direct scraping).
+🛡️ **Enhanced Data Collection:** _Implemented hybrid approach using official APIs + Apify automation platform for public social content_ (safe and compliant data collection).
 
 ✅ **Total Features Now:** **14 Safe, Scalable, and Realistic Modules**
 
@@ -72,9 +74,9 @@ Small and medium businesses often face the same critical challenge — **they do
 - **Cost Optimization:** 60-70% of data collected via free APIs, reducing overall operational costs
 - **Result:** Comprehensive 7-platform coverage at ~$30-40/month operational cost
 
-### 🔎 Search architecture (MongoDB ↔ OpenSearch)
+### 🔎 Search Architecture (MongoDB ↔ OpenSearch) _[Optional Enhancement]_
 
-We maintain a near-real-time OpenSearch index alongside MongoDB to enable fast full-text search, semantic similarity, and deduplication across mentions.
+**Optional Enhancement**: We can maintain a near-real-time OpenSearch index alongside MongoDB to enable fast full-text search, semantic similarity, and deduplication across mentions. This adds ~$15-25/month cost but significantly improves search performance for large datasets.
 
 Sync pattern (short):
 
@@ -100,32 +102,41 @@ Minimal index mapping example (OpenSearch):
 }
 ```
 
-This architecture allows fast user-facing search and similarity queries while MongoDB remains the source of truth for business data and processing.
+**Alternative**: For MVP, MongoDB's built-in text search (`$text` queries) can handle basic search needs without additional costs. OpenSearch can be added later as user base and data volume grows.
+
+This enhanced architecture allows fast user-facing search and similarity queries while MongoDB remains the source of truth for business data and processing.
 
 ---
 
 ## 4. **System Overview**
 
-### 🛠️ Tech Stack (Recommended)
+### 🛠️ Tech Stack Summary
 
-| Layer                           | Technology                                                     | Purpose                                                    |
-| ------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------- |
-| **Frontend**                    | **Next.js (React + TypeScript)**                               | Dashboard & marketing website (SSR + SPA)                  |
-| **Styling**                     | **Tailwind CSS**                                               | Responsive UI and dark theme                               |
-| **Backend**                     | **FastAPI (Python)**                                           | Core API server, data processing, JWT authentication       |
-| **Database**                    | **MongoDB Atlas**                                              | Stores businesses, mentions, AI data, alerts               |
-| **Search / Index**              | **OpenSearch / Elasticsearch**                                 | Fast full-text & semantic search, deduplication, analytics |
-| **Authentication**              | **JWT + bcrypt**                                               | Secure login and role-based access                         |
-| **AI / NLP**                    | **OpenAI API + Hugging Face models**                           | Sentiment, intent, AI reply suggestions                    |
-| **Scraping / Automation**       | **Apify Actors**                                               | LinkedIn & Facebook mentions                               |
-| **Official APIs**               | **Google Business, YouTube Data, Reddit API, Facebook Graph**  | Structured review data                                     |
-| **Scheduler / Background Jobs** | **Celery + Redis (or Apify scheduling)**                       | 8-hour automatic data collection                           |
-| **Notifications**               | **Twilio / SMTP**                                              | Email, SMS, WhatsApp alerts                                |
-| **Hosting**                     | **Frontend:** Vercel **Backend:** Render **DB:** MongoDB Atlas | Cloud-native deployment                                    |
-| **CDN & Security**              | **Cloudflare**                                                 | HTTPS, caching, domain protection                          |
-| **Version Control / CI/CD**     | **GitHub**                                                     | Source control, automatic deployment                       |
+> **📋 Complete Details**: See `reputify_design.md` for full tech stack specifications, API design, and deployment architecture.
 
-Note: Frontend will use Next.js (not Vite) and backend will use FastAPI (Python) as the primary stack for implementation.
+**Core Technologies**: Next.js + FastAPI + MongoDB Atlas + OpenAI + Apify automation  
+**Cost Structure**: ~$40-65/month operational cost for comprehensive 7-platform monitoring
+
+**Notes:**
+
+- Frontend will use Next.js (not Vite) and backend will use FastAPI (Python) as the primary stack for implementation.
+- **OpenSearch/Elasticsearch**: Optional but recommended for advanced search capabilities. Adds ~$15-25/month operational cost. Can be omitted initially and added later as the user base grows. MongoDB's built-in text search can handle basic search needs for MVP.
+
+---
+
+## 4. **Technical Architecture Summary**
+
+> **📋 Note**: For complete technical architecture details including system design, authentication flows, API endpoints, and deployment specifications, refer to `reputify_design.md`.
+
+**Key Technical Highlights:**
+
+- **Stack**: Next.js + FastAPI + MongoDB Atlas + OpenAI
+- **Architecture**: Single FastAPI backend (no Node.js/Express needed)
+- **Authentication**: JWT-based with role separation
+- **Data Collection**: Hybrid model (70% free APIs + 30% Apify automation)
+- **Cost**: ~$40-65/month operational cost for 7-platform monitoring
+
+---
 
 | **Version**   | **Features**                 | **Focus Area**                          | **Technical Domains**            |
 | ------------- | ---------------------------- | --------------------------------------- | -------------------------------- |

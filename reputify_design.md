@@ -1,5 +1,7 @@
 # 🏗️ Reputify - Social Listening System Design Documentation
 
+> **📋 Document Scope**: This document provides **complete technical architecture, system design, API specifications, authentication flows, and deployment details**. For business features, AI capabilities, and pricing strategy, refer to `Reputify_v3_Hybrid_AI_Reputation_Intelligence_System.md`.
+
 ## 1️⃣ **System Planning Overview**
 
 ### User Roles & Flows
@@ -25,10 +27,10 @@
 | **Styling**                     | **Tailwind CSS**                                               | Responsive UI and dark theme                               |
 | **Backend**                     | **FastAPI (Python)**                                           | Core API server, data processing, JWT authentication       |
 | **Database**                    | **MongoDB Atlas**                                              | Stores businesses, mentions, AI data, alerts               |
-| **Search / Index**              | **OpenSearch / Elasticsearch**                                 | Fast full-text & semantic search, deduplication, analytics |
+| **Search / Index**              | **OpenSearch / Elasticsearch** _(Optional)_                    | Fast full-text & semantic search, deduplication, analytics |
 | **Authentication**              | **JWT + bcrypt**                                               | Secure login and role-based access                         |
 | **AI / NLP**                    | **OpenAI API + Hugging Face models**                           | Sentiment, intent, AI reply suggestions                    |
-| **Scraping / Automation**       | **Apify Actors**                                               | LinkedIn & Facebook mentions                               |
+| **Automation Platform**         | **Apify Actors**                                               | LinkedIn & Facebook public mentions automation             |
 | **Official APIs**               | **Google Business, YouTube Data, Reddit API, Facebook Graph**  | Structured review data                                     |
 | **Scheduler / Background Jobs** | **Celery + Redis (or Apify scheduling)**                       | 8-hour automatic data collection                           |
 | **Notifications**               | **Twilio / SMTP**                                              | Email, SMS, WhatsApp alerts                                |
@@ -36,7 +38,105 @@
 | **CDN & Security**              | **Cloudflare**                                                 | HTTPS, caching, domain protection                          |
 | **Version Control / CI/CD**     | **GitHub**                                                     | Source control, automatic deployment                       |
 
-Note: We use Next.js (not Vite) for the frontend and FastAPI (Python) for the backend as the canonical stack for this project.
+**Notes:**
+
+- We use Next.js (not Vite) for the frontend and FastAPI (Python) for the backend as the canonical stack for this project.
+- **OpenSearch/Elasticsearch**: Optional but recommended for advanced search capabilities. Adds ~$15-25/month operational cost. Can be omitted initially and added later as the user base grows. MongoDB's built-in text search can handle basic search needs for MVP.
+
+---
+
+## 🧱 **SaaS Overall Architecture (Simplified View)**
+
+### Frontend ↔ Backend Communication Flow
+
+```
+Frontend (Next.js / React)
+        ↓  (API calls via HTTPS / JWT)
+Backend API (FastAPI - Python)
+        ↓
+Database (MongoDB Atlas)
+        ↓
+External APIs (Google, YouTube, Reddit, Facebook Graph, Apify)
+        ↓
+AI Engine (OpenAI API + NLP logic)
+```
+
+### 🧩 **Why No Node.js / Express Backend?**
+
+**Answer: Not needed as a second backend.**
+
+| Task                             | Who handles it                   | Why Node.js not needed                            |
+| -------------------------------- | -------------------------------- | ------------------------------------------------- |
+| API routes, logic, and data flow | ✅ **FastAPI**                   | Handles REST APIs, async requests, and JWT easily |
+| Integration with MongoDB         | ✅ **FastAPI (pymongo / motor)** | Python native                                     |
+| Running AI or NLP                | ✅ **FastAPI (Python)**          | Python ecosystem strongest for AI                 |
+| Frontend SSR / routing           | ✅ **Next.js (Node runtime)**    | Node is _already_ there inside Next.js            |
+| Extra REST layer (Express)?      | ❌ **Not needed**                | Duplicate effort and complexity                   |
+
+✅ **Summary**: Node.js is already present _indirectly_ through Next.js (your frontend framework). You don't need to create another backend with Express — FastAPI will be your main API server.
+
+---
+
+## 🔐 **Authentication Flow (JWT)**
+
+1. **User Login** → sends email & password to FastAPI
+2. **FastAPI** verifies credentials (bcrypt password check)
+3. **FastAPI** issues:
+   - **Access token** (short-lived, 15 minutes)
+   - **Refresh token** (7 days)
+4. **Frontend** stores tokens in HTTP-only cookies
+5. **Each API request** → sends `Authorization: Bearer <access_token>`
+6. **FastAPI** validates token → returns requested data
+7. **Token refresh** → Use refresh token to get new access token
+
+✅ This covers both client (business) and admin login flows.
+
+---
+
+## 🌐 **API Design for Frontend Communication**
+
+FastAPI REST endpoints for Next.js dashboard:
+
+| API Endpoint         | Method   | Description                      | Authentication |
+| -------------------- | -------- | -------------------------------- | -------------- |
+| `/auth/login`        | POST     | User login & token issue         | None           |
+| `/auth/register`     | POST     | Create new business account      | None           |
+| `/auth/refresh`      | POST     | Refresh JWT tokens               | Refresh token  |
+| `/api/mentions`      | GET      | Get mentions list for dashboard  | JWT required   |
+| `/api/mentions/{id}` | GET      | Get single mention + AI analysis | JWT required   |
+| `/api/alerts`        | GET      | Fetch active alerts              | JWT required   |
+| `/api/reports`       | GET      | Return report data for charts    | JWT required   |
+| `/api/integrations`  | GET/POST | Manage connected platforms       | JWT required   |
+| `/api/ai/reply`      | POST     | Generate AI reply via OpenAI     | JWT required   |
+| `/admin/clients`     | GET      | Admin view of all businesses     | Admin JWT      |
+| `/admin/jobs`        | GET      | View Apify/API job statuses      | Admin JWT      |
+
+These APIs connect directly to your Next.js dashboard via Axios or Fetch with JWT authentication.
+
+---
+
+## ⚡️ **How Everything Connects (System Flow)**
+
+```
+User → Frontend (Next.js)
+      ↓ (JWT secured API calls)
+FastAPI Backend → MongoDB Atlas
+      ↓
+     AI Engine (OpenAI + Hugging Face)
+      ↓
+     External APIs (Apify, Google Business, YouTube, Reddit, Facebook Graph)
+      ↓
+Background Jobs (Celery/Redis + Apify Scheduler - runs every 8 hours)
+```
+
+**Key Points:**
+
+- Frontend **only** communicates with FastAPI
+- FastAPI is the **single source of truth** for all business logic
+- FastAPI handles all external API calls, AI processing, and database operations
+- Background jobs run independently to collect data automatically
+
+---
 
 ```
 Reputify Portal
@@ -84,7 +184,7 @@ Reputify Portal
 
 ### 🎯 Core principle
 
-> Use **official APIs** where possible (safe + free), and use **Apify or scraping** only where APIs don't allow public search.
+> Use **official APIs** where possible (safe + free), and use **Apify automation** only where APIs don't allow public search.
 
 ## ⚙️ PLATFORM-BY-PLATFORM BREAKDOWN
 
@@ -276,17 +376,17 @@ Reputify uses **MongoDB Atlas** for its flexible document-based data model, whic
     "email": "owner@cafe.lk",
     "plan": "Professional",
     "platforms": {
-      "google_business": { 
-        "connected": true, 
-        "api_key": "encrypted_key" 
+      "google_business": {
+        "connected": true,
+        "api_key": "encrypted_key"
       },
-      "youtube": { 
-        "connected": true, 
-        "api_key": "encrypted_key" 
+      "youtube": {
+        "connected": true,
+        "api_key": "encrypted_key"
       },
-      "reddit": { 
-        "connected": true, 
-        "api_key": "encrypted_key" 
+      "reddit": {
+        "connected": true,
+        "api_key": "encrypted_key"
       },
       "facebook_page": {
         "connected": true,
@@ -314,9 +414,9 @@ Reputify uses **MongoDB Atlas** for its flexible document-based data model, whic
     "platform": "facebook",
     "data_source": "graph_api",
     "text": "The service was slow but food was good",
-    "sentiment": { 
-      "label": "mixed", 
-      "score": 0.72 
+    "sentiment": {
+      "label": "mixed",
+      "score": 0.72
     },
     "intent": "complaint",
     "aspect": ["service", "food"],
@@ -338,7 +438,8 @@ Reputify uses **MongoDB Atlas** for its flexible document-based data model, whic
 ```
 
 **Notes:**
-- `data_source`: Indicates whether the mention came from "graph_api" (official API) or "apify" (public scraping)
+
+- `data_source`: Indicates whether the mention came from "graph_api" (official API) or "apify" (automated collection)
 - `cost_tier`: Tracks whether the data source is "free" or "paid" for cost management
 
 ---
@@ -366,16 +467,16 @@ To provide fast, relevant full-text and semantic search over mentions (and to su
 {
   "mappings": {
     "properties": {
-      "mention_id":       { "type": "keyword" },
-      "business_id":      { "type": "keyword" },
-      "platform":         { "type": "keyword" },
-      "text":             { "type": "text", "analyzer": "standard" },
-      "lang":             { "type": "keyword" },
-      "sentiment_label":  { "type": "keyword" },
-      "sentiment_score":  { "type": "float" },
-      "timestamp":        { "type": "date" },
-      "original_url":     { "type": "keyword" },
-      "embedding":        { "type": "dense_vector", "dims": 1536 }
+      "mention_id": { "type": "keyword" },
+      "business_id": { "type": "keyword" },
+      "platform": { "type": "keyword" },
+      "text": { "type": "text", "analyzer": "standard" },
+      "lang": { "type": "keyword" },
+      "sentiment_label": { "type": "keyword" },
+      "sentiment_score": { "type": "float" },
+      "timestamp": { "type": "date" },
+      "original_url": { "type": "keyword" },
+      "embedding": { "type": "dense_vector", "dims": 1536 }
     }
   }
 }
@@ -403,7 +504,7 @@ NLP → MongoDB → Saves processed data with source attribution
 MongoDB → Dashboard → Updates charts & alerts
 Dashboard → Twilio → Sends notification to user
 
-````
+```
 
 > "Sequence flow representing hybrid data collection (Official APIs + Apify), AI analysis, and alert delivery with cost optimization."
 
@@ -886,7 +987,7 @@ Redirect → Login page.
 ### Data Collection & Processing
 
 - **Hybrid Data Collection Model**:
-  - **Apify (paid scraping)** for public Facebook and LinkedIn mentions/hashtags
+  - **Apify automation** for public Facebook and LinkedIn mentions/hashtags
   - **Official APIs (free)** for Google Reviews, YouTube Comments, and Reddit posts
 - **NLP Processing**: Hugging Face Transformers / OpenAI API
 - **Real-time Processing**: WebSocket connections for live updates
@@ -932,7 +1033,7 @@ JWT payload example:
   "role": "client",
   "exp": 1739942000
 }
-````
+```
 
 #### **Key Features:**
 
@@ -962,7 +1063,7 @@ This requires **separate authentication flows** handled via **Apify** and **offi
 When a business connects its accounts through the **Integrations Page**, the system performs one of two flows:
 
 1. **Apify-based connection:**
-   Uses Reputify's preconfigured Apify actors to handle scraping of public data without needing the business's direct login credentials.
+   Uses Reputify's preconfigured Apify actors to handle automated collection of public data without needing the business's direct login credentials.
 2. **Official API-based connection (OAuth):**
    Redirects users to the platform's consent page (e.g., Google or Reddit) and stores the returned access tokens securely in the backend.
 
@@ -991,96 +1092,83 @@ The backend is the only layer authorized to initiate Apify runs or API fetches o
 
 ---
 
-### **4️⃣ Combined Authentication Flow**
-
-```
-(Client Login via JWT)
-       ↓
-[Reputify Backend (FastAPI)]
-       ↓
-(Auth Middleware validates JWT)
-       ↓
-[Integrations Module]
-       ↓
-{Facebook, LinkedIn via Apify}
-{Google, YouTube, Reddit via OAuth APIs}
-       ↓
-[Data Collection Layer → NLP Engine → MongoDB]
-       ↓
-[Dashboard Visualization]
-```
-
 ---
 
-### **5️⃣ Advantages of the Dual Model**
+## 🔟 **Comprehensive API Endpoints Structure**
 
-| Benefit                            | Description                                                                    |
-| ---------------------------------- | ------------------------------------------------------------------------------ |
-| **Separation of responsibilities** | User auth (JWT) and data auth (OAuth/Apify) are independent for better control |
-| **High security**                  | Tokens encrypted and isolated per tenant                                       |
-| **Scalability**                    | Supports future platform integrations (TikTok, Threads) easily                 |
-| **Compliance**                     | Follows OAuth 2.0 standards and Apify's ethical scraping policies              |
-| **Flexibility**                    | Enables multi-tenant structure and admin supervision                           |
+### 🔐 Authentication Endpoints
 
----
+| Endpoint         | Method | Description                     | Authentication | Request Body                   | Response                        |
+| ---------------- | ------ | ------------------------------- | -------------- | ------------------------------ | ------------------------------- |
+| `/auth/login`    | POST   | User login & token issue        | None           | `{email, password}`            | `{access_token, refresh_token}` |
+| `/auth/register` | POST   | Create new business account     | None           | `{name, email, password, etc}` | `{user_id, message}`            |
+| `/auth/refresh`  | POST   | Refresh JWT tokens              | Refresh token  | `{refresh_token}`              | `{access_token, refresh_token}` |
+| `/auth/logout`   | POST   | User logout & invalidate tokens | JWT required   | None                           | `{message}`                     |
 
-### **6️⃣ Example User Scenario**
+### 📊 Business & Mentions
 
-1. **Login:**
-   The business owner logs into Reputify with email and password (JWT).
-2. **Integrate Platforms:**
-   Navigates to _Integrations Page_ and clicks "Connect Google Business" or "Connect via Apify (Facebook)."
-3. **Authorize:**
-   Completes OAuth consent (for Google) or automatically uses Apify actor setup (for Facebook/LinkedIn).
-4. **Automation:**
-   Every 8 hours, Reputify fetches new mentions using stored credentials.
-5. **Visualization:**
-   The dashboard updates sentiment trends, AI replies, and alerts automatically.
+| Endpoint               | Method | Description                       | Authentication | Query Parameters              | Response              |
+| ---------------------- | ------ | --------------------------------- | -------------- | ----------------------------- | --------------------- |
+| `/api/mentions`        | GET    | Get mentions list for dashboard   | JWT required   | `?platform=&sentiment=&limit` | `{mentions[], total}` |
+| `/api/mentions/{id}`   | GET    | Get single mention + AI analysis  | JWT required   | None                          | `{mention, analysis}` |
+| `/api/mentions/sync`   | POST   | Trigger manual mention collection | JWT required   | `{platforms[]}`               | `{job_id, status}`    |
+| `/api/dashboard/stats` | GET    | Dashboard KPIs and summary        | JWT required   | `?period=7d`                  | `{kpis, charts_data}` |
 
----
+### 🔔 Alerts & Notifications
 
-### **7️⃣ Summary**
+| Endpoint           | Method | Description            | Authentication | Query Parameters | Response          |
+| ------------------ | ------ | ---------------------- | -------------- | ---------------- | ----------------- |
+| `/api/alerts`      | GET    | Fetch active alerts    | JWT required   | `?status=active` | `{alerts[]}`      |
+| `/api/alerts/{id}` | PATCH  | Mark alert as resolved | JWT required   | None             | `{updated_alert}` |
 
-Reputify's **custom JWT authentication** ensures secure platform access for all users, while **Apify and OAuth tokens** enable trusted connections with external data sources.
-This dual model provides complete control, data privacy, and seamless automation for multi-tenant SaaS operations.
+### 📈 Analytics & Reports
 
----
+| Endpoint                   | Method | Description                | Authentication | Query Parameters         | Response                  |
+| -------------------------- | ------ | -------------------------- | -------------- | ------------------------ | ------------------------- |
+| `/api/analytics/sentiment` | GET    | Sentiment trends over time | JWT required   | `?period=30d&platform=`  | `{trends[], summary}`     |
+| `/api/analytics/platforms` | GET    | Platform breakdown & stats | JWT required   | `?period=7d`             | `{platform_stats[]}`      |
+| `/api/reports/export`      | POST   | Generate PDF/CSV reports   | JWT required   | `{type, period, format}` | `{download_url, file_id}` |
 
-## �🔟 **API Endpoints Structure**
+### 🔗 Platform Integrations
 
-### Authentication Endpoints
+| Endpoint                    | Method | Description              | Authentication | Request Body              | Response                   |
+| --------------------------- | ------ | ------------------------ | -------------- | ------------------------- | -------------------------- |
+| `/api/integrations`         | GET    | List connected platforms | JWT required   | None                      | `{integrations[]}`         |
+| `/api/integrations/connect` | POST   | Connect new platform     | JWT required   | `{platform, credentials}` | `{integration_id, status}` |
+| `/api/integrations/{id}`    | DELETE | Disconnect platform      | JWT required   | None                      | `{message}`                |
 
-```
-POST /auth/login          - User login
-POST /auth/register       - User registration
-POST /auth/refresh        - Token refresh
-POST /auth/logout         - User logout
-```
+### 🤖 AI & Automation
 
-### Business & Mentions
+| Endpoint          | Method | Description                  | Authentication | Request Body            | Response                        |
+| ----------------- | ------ | ---------------------------- | -------------- | ----------------------- | ------------------------------- |
+| `/api/ai/reply`   | POST   | Generate AI reply via OpenAI | JWT required   | `{mention_id, context}` | `{suggested_reply, confidence}` |
+| `/api/ai/analyze` | POST   | Analyze mention with AI      | JWT required   | `{text, platform}`      | `{sentiment, intent, aspects}`  |
 
-```
-GET  /api/mentions        - Get all mentions (filtered)
-GET  /api/mentions/{id}   - Get specific mention details
-POST /api/mentions/sync   - Trigger mention collection
-GET  /api/dashboard/stats - Dashboard KPIs
-```
+### 👤 User Management
 
-### Analytics & Reports
+| Endpoint             | Method | Description                  | Authentication | Request Body       | Response             |
+| -------------------- | ------ | ---------------------------- | -------------- | ------------------ | -------------------- |
+| `/api/user/profile`  | GET    | Get user profile             | JWT required   | None               | `{profile}`          |
+| `/api/user/profile`  | PATCH  | Update user profile          | JWT required   | `{name, settings}` | `{updated_profile}`  |
+| `/api/user/settings` | PATCH  | Update notification settings | JWT required   | `{preferences}`    | `{updated_settings}` |
 
-```
-GET  /api/analytics/sentiment    - Sentiment trends
-GET  /api/analytics/platforms    - Platform breakdown
-POST /api/reports/export         - Generate PDF/CSV reports
-```
+### 👨‍💼 Admin Endpoints
 
-### Admin Endpoints
+| Endpoint               | Method | Description                 | Authentication | Query Parameters     | Response             |
+| ---------------------- | ------ | --------------------------- | -------------- | -------------------- | -------------------- |
+| `/admin/clients`       | GET    | List all businesses         | Admin JWT      | `?status=&limit=`    | `{clients[], total}` |
+| `/admin/clients/{id}`  | GET    | Get client details          | Admin JWT      | None                 | `{client, stats}`    |
+| `/admin/system/health` | GET    | System status & monitoring  | Admin JWT      | None                 | `{health, metrics}`  |
+| `/admin/jobs`          | GET    | View Apify/API job statuses | Admin JWT      | `?status=&platform=` | `{jobs[], summary}`  |
+| `/admin/jobs/trigger`  | POST   | Manual job execution        | Admin JWT      | `{job_type, params}` | `{job_id, status}`   |
 
-```
-GET  /admin/clients       - List all businesses
-GET  /admin/system/health - System status
-POST /admin/jobs/trigger  - Manual job execution
-```
+**API Design Notes:**
+
+- All endpoints return standard HTTP status codes (200, 201, 400, 401, 403, 404, 500)
+- JWT tokens are passed in `Authorization: Bearer <token>` header
+- All responses include standard wrapper: `{success: boolean, data: object, message?: string}`
+- Rate limiting applied: 100 requests/minute for regular users, 500/minute for admin users
+- These REST APIs connect directly to Next.js dashboard via Axios or Fetch with JWT authentication
 
 ---
 
@@ -1179,7 +1267,7 @@ The structure provides an affordable entry point for small businesses while scal
 | Feature                    | **Starter**                  | **Professional**                     | **Business**                                |
 | -------------------------- | ---------------------------- | ------------------------------------ | ------------------------------------------- |
 | **Platforms Covered**      | Google Reviews + Facebook/IG | + YouTube + Reddit + Public mentions | All 7 platforms (complete coverage)         |
-| **Data Collection Method** | Official APIs only           | APIs + Limited Apify                 | APIs + Full Apify scraping                  |
+| **Data Collection Method** | Official APIs only           | APIs + Limited Apify automation      | APIs + Full Apify automation                |
 | **Mention Types**          | Reviews + Own page comments  | + Public hashtags & brand mentions   | + TikTok videos + LinkedIn discussions      |
 | **Sentiment Analysis**     | ✅ English only              | ✅ English + Sinhala/Tamil           | ✅ Multilingual + confidence scores         |
 | **Real-time Monitoring**   | ✅ Every 4 hours             | ✅ Every 2 hours                     | ✅ Every 30 minutes                         |
@@ -1483,5 +1571,39 @@ Reputify Design System
 ## **Testing & Quality Assurance**
 
 Unit and integration testing are conducted using Jest (frontend) and Pytest (backend) to ensure reliability of NLP, data ingestion, and alert triggers.
+
+---
+
+## 🎯 **Executive Summary: Architecture Explanation for Lecturer**
+
+### **Simplified Stack Explanation**
+
+> "We're using **FastAPI** as our main backend since it's lightweight and works exceptionally well with AI and NLP processing. **Node.js is already included through Next.js** for the frontend, so we don't need a separate Express backend. The frontend communicates with FastAPI via **REST APIs secured by JWT authentication**, and all AI and data collection logic runs through Python."
+
+### **Key Architecture Decisions**
+
+| **Question**                       | **Answer**                                  | **Justification**                           |
+| ---------------------------------- | ------------------------------------------- | ------------------------------------------- |
+| Do we need Node/Express backend?   | ❌ **No** — FastAPI handles it all          | Avoids duplicate backend complexity         |
+| Do we have Node at all?            | ✅ **Yes** — inside Next.js runtime         | Frontend framework requirement              |
+| Who handles authentication?        | ✅ **FastAPI using JWT**                    | Centralized auth with access/refresh tokens |
+| How does frontend connect?         | ✅ **Via REST APIs with JWT**               | Standard web architecture pattern           |
+| Who handles AI / NLP / automation? | ✅ **FastAPI (OpenAI + Apify integration)** | Python ecosystem dominance in AI            |
+| Search enhancement?                | 🔄 **OpenSearch (Optional, ~$20/month)**    | Can start with MongoDB text search          |
+
+### **Cost-Optimized Architecture**
+
+- **Core Stack**: Free (Next.js + FastAPI + MongoDB Atlas + Free APIs)
+- **AI Processing**: ~$10-15/month (OpenAI API usage)
+- **Data Collection**: ~$15-25/month (Apify automation platform)
+- **Optional Search**: ~$15-25/month (OpenSearch for advanced search capabilities)
+- **Total Estimated**: ~$40-65/month operational cost for comprehensive 7-platform monitoring
+
+### **Scalability & Compliance**
+
+- **Hybrid Data Collection**: 60-70% free APIs + 30-40% paid automation
+- **Ethical Automation**: Only public content via Apify's compliant actors
+- **Security**: JWT authentication with role-based access control
+- **Performance**: Async FastAPI + MongoDB + optional OpenSearch indexing
 
 ---
